@@ -4153,6 +4153,7 @@ local specialModList = {
 	["lose (%d+)%% of energy shield on kill"] = function(num) return { mod("EnergyShieldOnKill", "BASE", -1, { type = "PercentStat", stat = "EnergyShield", percent = num }) } end,
 	["%+(%d+) energy shield gained on killing a shocked enemy"] = function(num) return { mod("EnergyShieldOnKill", "BASE", num, { type = "ActorCondition", actor = "enemy", var = "Shocked" }) } end,
 	["%+(%d+) energy shield gained on kill per level"] = function(num) return { mod("EnergyShieldOnKill", "BASE", num, { type = "Multiplier", var = "Level" }) } end,
+	["(%d+) life gained on kill per frenzy charge"] = function(num) return { mod("LifeOnKill", "BASE", num, { type = "Multiplier", var = "FrenzyCharge" }) } end,
 	-- Defences
 	["chaos damage t?a?k?e?n? ?does not bypass energy shield"] = { flag("ChaosNotBypassEnergyShield") },
 	["(%d+)%% of chaos damage t?a?k?e?n? ?does not bypass energy shield"] = function(num) return { mod("ChaosEnergyShieldBypass", "BASE", -num) } end,
@@ -4619,6 +4620,41 @@ local specialModList = {
 	["minimum power charges equal to maximum while stationary"] = { flag("MinimumPowerChargesIsMaximumPowerCharges", {type = "Condition", var = "Stationary" }) },
 	["minimum frenzy charges equal to maximum while stationary"] = { flag("MinimumFrenzyChargesIsMaximumFrenzyCharges", {type = "Condition", var = "Stationary" }) },
 	["minimum endurance charges equal to maximum while stationary"] = { flag("MinimumEnduranceChargesIsMaximumEnduranceCharges", {type = "Condition", var = "Stationary" }) },
+	
+	["(%d+)%% chance to gain a power, frenzy or endurance charge on kill"] = function(num) return {
+		mod("PowerChargeGainOnKill", "BASE", num / 3 ),
+		mod("FrenzyChargeGainOnKill", "BASE", num / 3 ),
+		mod("EnduranceChargeGainOnKill", "BASE", num / 3),
+	} end,
+	["(%d+)%% chance to steal power, frenzy, and endurance charges on hit"] = function(num) return {
+		mod("PowerChargesStealOnHit", "BASE", num),
+		mod("FrenzyChargesStealOnHit", "BASE", num),
+		mod("EnduranceChargesStealOnHit", "BASE", num),
+	} end,
+	["steal power, frenzy, and endurance charges on hit"] = {
+		mod("PowerChargesStealOnHit", "BASE", 100),
+		mod("FrenzyChargesStealOnHit", "BASE", 100),
+		mod("EnduranceChargesStealOnHit", "BASE", 100),
+	},
+	["(%d+)%% chance to gain an? (%w+) charge on kill"] = function(num, _, chargeType) return { mod( chargeType:gsub("^%l", string.upper).."ChargeGainOnKill", "BASE", num) } end,
+	["(%d+)%% chance to gain an? (%w+) charge when you block"] = function(num, _, chargeType) return { mod( chargeType:gsub("^%l", string.upper).."ChargeGainOnBlock", "BASE", num) } end,
+	["(%d+)%% chance to gain an endurance charge on kill while holding a shield"] = function(num) return { mod("EnduranceChargeGainOnKill", "BASE", num, {type = "Condition", var = "UsingShield" } ) } end,
+	["(%d+)%% chance to gain an endurance charge when you are hit"] = function(num) return { mod("EnduranceChargeGainWhenHit", "BASE", num) } end,
+	["(%d+)%% chance to gain a frenzy charge when you block attack damage"] = function(num) return { mod("FrenzyChargeGainOnAttackBlock", "BASE", num) } end,
+	["(%d+)%% chance to gain a frenzy charge when you hit your marked enemy"] = function(num) return { mod("FrenzyChargeGainOnHit", "BASE", num, { type = "ActorCondition", actor = "enemy", var = "Marked" }) } end,
+	["(%d+)%% chance to gain a frenzy charge when you hit a unique enemy"] = function(num) return { mod("FrenzyChargeGainOnHit", "BASE", num, { type = "ActorCondition", actor = "enemy", var = "RareOrUnique" }) } end,
+	["(%d+)%% chance to gain a frenzy charge on critical strike at close range"] = function(num) return { mod("FrenzyChargeGainOnCrit", "BASE", num, { type = "Condition", var = "AtCloseRange" } ) } end,
+	["(%d+)%% chance to gain a power charge on hit"] = function(num) return { mod("PowerChargeGainOnHit", "BASE", num) } end,
+	["(%d+)%% chance to gain a power charge on critical strike"] = function(num) return { mod("PowerChargeGainOnCrit", "BASE", num ) } end,
+	["(%d+)%% chance to gain a power charge on non%-critical strike"] = function(num) return { mod("PowerChargeGainOnNonCrit", "BASE", num ) } end,
+	["(%d+)%% chance to gain a power charge when you hit a frozen enemy"] = function(num) return { mod("PowerChargeGainOnHit", "BASE", num, { type = "ActorCondition", actor = "enemy", var = "Frozen" } ) } end,
+	["(%d+)%% chance to gain a power charge when you block spell damage"] = function(num) return { mod("PowerChargeGainOnSpellBlock", "BASE", num ) } end,
+	["gain a power charge on non%-critical strike"] = { mod("PowerChargeGainOnNonCrit", "BASE", 100 ) },
+	["gain a power charge on killing a frozen enemy"] = { mod("PowerChargeGainOnKill", "BASE", 100, { type = "ActorCondition", actor = "enemy", var = "Frozen" } ) },
+	["gain a power charge on hit while poisoned"] = { mod("PowerChargeGainOnHit", "BASE", 100, { type = "Condition", var = "Poisoned" } ) },
+	["gain a frenzy charge on hit while bleeding"] = { mod("FrenzyChargeGainOnHit", "BASE", 100, { type = "Condition", var = "Bleeding" } ) },
+
+
 	["count as having maximum number of power charges"] = { flag("HaveMaximumPowerCharges") },
 	["count as having maximum number of frenzy charges"] = { flag("HaveMaximumFrenzyCharges") },
 	["count as having maximum number of endurance charges"] = { flag("HaveMaximumEnduranceCharges") },
@@ -5395,14 +5431,17 @@ local jewelOtherFuncs = {
 	["Passives granting Lightning Resistance or all Elemental Resistances in Radius also grant Chance to Block Spells at 35% of its value"] = getSimpleConv({ "LightningResist","ElementalResist" }, "SpellBlockChance", "BASE", false, 0.35),
 	["Passives granting Lightning Resistance or all Elemental Resistances in Radius also grant Chance to Block Spell Damage at 35% of its value"] = getSimpleConv({ "LightningResist","ElementalResist" }, "SpellBlockChance", "BASE", false, 0.35),
 	["Passives granting Lightning Resistance or all Elemental Resistances in Radius also grant Chance to Block Spell Damage at 50% of its value"] = getSimpleConv({ "LightningResist","ElementalResist" }, "SpellBlockChance", "BASE", false, 0.5),
+	["Passives granting Lightning Resistance or all Elemental Resistances in Radius also grant an equal chance to gain a Power Charge on Kill"] = getSimpleConv({ "LightningResist","ElementalResist" }, "PowerChargeGainOnKill", "BASE", false, 1),	
 	["Passives granting Cold Resistance or all Elemental Resistances in Radius also grant Chance to Dodge Attacks at 35% of its value"] = getSimpleConv({ "ColdResist","ElementalResist" }, "AttackDodgeChance", "BASE", false, 0.35),
 	["Passives granting Cold Resistance or all Elemental Resistances in Radius also grant Chance to Dodge Attack Hits at 35% of its value"] = getSimpleConv({ "ColdResist","ElementalResist" }, "AttackDodgeChance", "BASE", false, 0.35),
 	["Passives granting Cold Resistance or all Elemental Resistances in Radius also grant Chance to Suppress Spell Damage at 35% of its value"] = getSimpleConv({ "ColdResist","ElementalResist" }, "SpellSuppressionChance", "BASE", false, 0.35),
 	["Passives granting Cold Resistance or all Elemental Resistances in Radius also grant Chance to Suppress Spell Damage at 50% of its value"] = getSimpleConv({ "ColdResist","ElementalResist" }, "SpellSuppressionChance", "BASE", false, 0.5),
 	["Passives granting Cold Resistance or all Elemental Resistances in Radius also grant Chance to Suppress Spell Damage at 70% of its value"] = getSimpleConv({ "ColdResist","ElementalResist" }, "SpellSuppressionChance", "BASE", false, 0.7),
+	["Passives granting Cold Resistance or all Elemental Resistances in Radius also grant an equal chance to gain a Frenzy Charge on Kill"] = getSimpleConv({ "LightningResist","ElementalResist" }, "FrenzyChargeGainOnKill", "BASE", false, 1),
 	["Passives granting Fire Resistance or all Elemental Resistances in Radius also grant Chance to Block Attack Damage at 35% of its value"] = getSimpleConv({ "FireResist","ElementalResist" }, "BlockChance", "BASE", false, 0.35),
 	["Passives granting Fire Resistance or all Elemental Resistances in Radius also grant Chance to Block Attack Damage at 50% of its value"] = getSimpleConv({ "FireResist","ElementalResist" }, "BlockChance", "BASE", false, 0.5),
 	["Passives granting Fire Resistance or all Elemental Resistances in Radius also grant Chance to Block at 35% of its value"] = getSimpleConv({ "FireResist","ElementalResist" }, "BlockChance", "BASE", false, 0.35),
+	["Passives granting Fire Resistance or all Elemental Resistances in Radius also grant an equal chance to gain an Endurance Charge on Kill"] = getSimpleConv({ "LightningResist","ElementalResist" }, "EnduranceChargeGainOnKill", "BASE", false, 1),
 	["Melee and Melee Weapon Type modifiers in Radius are Transformed to Bow Modifiers"] = function(node, out, data)
 		if node then
 			local mask1 = bor(ModFlag.Axe, ModFlag.Claw, ModFlag.Dagger, ModFlag.Mace, ModFlag.Staff, ModFlag.Sword, ModFlag.Melee)

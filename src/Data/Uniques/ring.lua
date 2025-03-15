@@ -1532,7 +1532,7 @@ Has 1 Socket
 {variant:20}{crafted}+1 to Minimum Power Charges
 {variant:20}{crafted}(3-4)% chance to gain a Power Charge on Kill
 {variant:21}{crafted}+1 to Minimum Endurance Charges
-{variant:21}{crafted}(3-4)% chance to gain a Endurance Charge on Kill
+{variant:21}{crafted}(3-4)% chance to gain an Endurance Charge on Kill
 ]],[[
 Voideye
 Unset Ring
