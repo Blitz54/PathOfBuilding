@@ -2945,6 +2945,10 @@ skills["DreadBanner"] = {
 	},
 	baseFlags = {
 		spell = true,
+		area = true,
+		duration = true,
+		aura = true,
+		banner = true,
 	},
 	baseMods = {
 		skill("radius", 24),
@@ -11715,6 +11719,10 @@ skills["WarBanner"] = {
 	},
 	baseFlags = {
 		spell = true,
+		area = true,
+		duration = true,
+		aura = true,
+		banner = true,
 	},
 	baseMods = {
 		skill("radius", 24),

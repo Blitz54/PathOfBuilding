@@ -476,7 +476,7 @@ local skills, mod, flag, skill = ...
 #mods
 
 #skill Bladefall
-#flags spell area
+#flags spell area duration
 	statMap = {
 		["quality_display_bladefall_is_gem"] = {
 			--Display only
@@ -689,7 +689,7 @@ local skills, mod, flag, skill = ...
 #mods
 
 #skill Cremation
-#flags spell projectile area
+#flags spell projectile area duration
 	preDamageFunc = function(activeSkill, output)
 		if activeSkill.skillPart == 1 then
 			activeSkill.skillData.hitTimeOverride = activeSkill.skillData.cremationFireRate / (1 + (activeSkill.skillData.cremationFireRateIncrease or 0))
@@ -725,7 +725,7 @@ local skills, mod, flag, skill = ...
 #mods
 
 #skill CremationAltX
-#flags spell projectile area
+#flags spell projectile area duration
 	preDamageFunc = function(activeSkill, output)
 		if activeSkill.skillPart == 1 then
 			activeSkill.skillData.hitTimeOverride = activeSkill.skillData.cremationFireRate / (1 + (activeSkill.skillData.cremationFireRateIncrease or 0))
@@ -761,7 +761,7 @@ local skills, mod, flag, skill = ...
 #mods
 
 #skill CremationAltY
-#flags spell projectile area
+#flags spell projectile area duration
 	preDamageFunc = function(activeSkill, output)
 		activeSkill.skillData.hitTimeOverride = activeSkill.skillData.cremationFireRate / (1 + (activeSkill.skillData.cremationFireRateIncrease or 0))
 	end,
@@ -1130,7 +1130,7 @@ local skills, mod, flag, skill = ...
 #mods
 
 #skill EtherealKnivesAltX
-#flags spell projectile
+#flags spell projectile duration
 #mods
 
 #skill EtherealKnivesAltY
@@ -1626,22 +1626,22 @@ local skills, mod, flag, skill = ...
 #mods
 
 #skill FrostBladesAltX
-#flags attack melee projectile area dotFromAttack
+#flags attack melee area duration dotFromAttack
 	parts = {
 		{
 			name = "Melee Hit",
 			attack = true,
 			melee = true,
-			projectile = true,
 			area = false,
+			duration = false,
 		},
 		{
 			name = "Ground DoT",
 			attack = false,
 			hit = false,
 			melee = false,
-			projectile = false,
 			area = true,
+			duration = true,
 		},
 	},
 	statMap = {
@@ -2449,7 +2449,7 @@ local skills, mod, flag, skill = ...
 #mods
 
 #skill ShatteringSteelAltX
-#flags attack projectile area
+#flags attack projectile area duration
 	parts = {
 		{
 			name = "Projectile",
@@ -2761,7 +2761,7 @@ local skills, mod, flag, skill = ...
 #mods
 
 #skill SmokeMine
-#flags spell mine area buff
+#flags spell mine area buff duration
 	statMap = {
 		["base_movement_velocity_+%"] = {
 			mod("MovementSpeed", "INC", nil, 0, 0, { type = "GlobalEffect", effectType = "Buff" }),
@@ -2997,7 +2997,7 @@ local skills, mod, flag, skill = ...
 #mods
 
 #skill VenomGyre
-#flags attack projectile
+#flags attack projectile duration
 	parts = {
 		{
 			name = "Outgoing Projectile",
@@ -3067,7 +3067,7 @@ local skills, mod, flag, skill = ...
 #mods
 
 #skill VolatileDeadAltX
-#flags spell area
+#flags spell area duration
 	parts = {
 		{
 			name = "Spell",

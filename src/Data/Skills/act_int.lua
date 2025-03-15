@@ -253,6 +253,7 @@ skills["VaalArc"] = {
 	baseFlags = {
 		spell = true,
 		chaining = true,
+		duration = true,
 	},
 	baseMods = {
 		flag("Condition:CanBeLucky", { type = "GlobalEffect", effectType = "Buff" }),
@@ -2881,6 +2882,7 @@ skills["ColdSnap"] = {
 	baseFlags = {
 		spell = true,
 		area = true,
+		duration = true,
 	},
 	baseMods = {
 		skill("dotIsArea", true),

@@ -2526,6 +2526,7 @@ skills["Bladefall"] = {
 	baseFlags = {
 		spell = true,
 		area = true,
+		duration = true,
 	},
 	baseMods = {
 		skill("radius", 44),
@@ -3963,6 +3964,7 @@ skills["Cremation"] = {
 		spell = true,
 		projectile = true,
 		area = true,
+		duration = true,
 	},
 	baseMods = {
 		skill("radius", 15),
@@ -4078,6 +4080,7 @@ skills["CremationAltX"] = {
 		spell = true,
 		projectile = true,
 		area = true,
+		duration = true,
 	},
 	baseMods = {
 		skill("radius", 15),
@@ -4179,6 +4182,7 @@ skills["CremationAltY"] = {
 		spell = true,
 		projectile = true,
 		area = true,
+		duration = true,
 	},
 	baseMods = {
 		skill("radius", 15),
@@ -6059,6 +6063,7 @@ skills["EtherealKnivesAltX"] = {
 	baseFlags = {
 		spell = true,
 		projectile = true,
+		duration = true,
 	},
 	qualityStats = {
 		Default = {
@@ -7918,16 +7923,16 @@ skills["FrostBladesAltX"] = {
 			name = "Melee Hit",
 			attack = true,
 			melee = true,
-			projectile = true,
 			area = false,
+			duration = false,
 		},
 		{
 			name = "Ground DoT",
 			attack = false,
 			hit = false,
 			melee = false,
-			projectile = false,
 			area = true,
+			duration = true,
 		},
 	},
 	statMap = {
@@ -7939,8 +7944,8 @@ skills["FrostBladesAltX"] = {
 	baseFlags = {
 		attack = true,
 		melee = true,
-		projectile = true,
 		area = true,
+		duration = true,
 		dotFromAttack = true,
 	},
 	baseMods = {
@@ -12735,6 +12740,7 @@ skills["ShatteringSteelAltX"] = {
 		attack = true,
 		projectile = true,
 		area = true,
+		duration = true,
 	},
 	baseMods = {
 		skill("radius", 28),
@@ -13572,6 +13578,7 @@ skills["SmokeMine"] = {
 		mine = true,
 		area = true,
 		buff = true,
+		duration = true,
 	},
 	baseMods = {
 		skill("radius", 18),
@@ -15388,6 +15395,7 @@ skills["VenomGyre"] = {
 	baseFlags = {
 		attack = true,
 		projectile = true,
+		duration = true,
 	},
 	baseMods = {
 		flag("Condition:ReturningProjectile", { type = "SkillPart", skillPart = 2 }),
@@ -15864,6 +15872,7 @@ skills["VolatileDeadAltX"] = {
 	baseFlags = {
 		spell = true,
 		area = true,
+		duration = true,
 	},
 	baseMods = {
 		skill("explodeCorpse", true, { type = "SkillPart", skillPart = 2 }),
