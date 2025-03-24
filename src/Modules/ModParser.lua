@@ -3276,8 +3276,11 @@ local specialModList = {
 	["freeze chilled enemies as though dealing (%d+)%% more damage"] = function(num) return { mod("FreezeAsThoughDealing", "MORE", num, { type = "ActorCondition", actor = "enemy", var = "Chilled" }) } end,
 	["manabond and stormbind freeze enemies as though dealing (%d+)%% more damage"] = function(num) return { mod("FreezeAsThoughDealing", "MORE", num, { type = "SkillName", skillNameList = { "Manabond", "Stormbind" }, includeTransfigured = true }) } end,
 	["(%d+)%% chance to inflict brittle on enemies when you block their damage"] = function(num) return { mod("EnemyBrittleChance", "BASE", num) } end,
+	["inflict brittle on enemies when you block their damage"] = { mod("EnemyBrittleChance", "BASE", 100) },
 	["(%d+)%% chance to inflict sap on enemies when you block their damage"] = function(num) return { mod("EnemySapChance", "BASE", num) } end,
+	["sap enemies when you block their damage"] = { mod("EnemySapChance", "BASE", 100) },
 	["(%d+)%% chance to inflict scorch on enemies when you block their damage"] = function(num) return { mod("EnemyScorchChance", "BASE", num) } end,
+	["scorch enemies when you block their damage"] = { mod("EnemyScorchChance", "BASE", 100) },
 	["scorch enemies in close range when you block"] = { mod("EnemyScorchChance", "BASE", 100) },
 	["(%d+)%% chance to shock attackers for (%d+) seconds on block"] = { mod("ShockBase", "BASE", data.nonDamagingAilment["Shock"].default) },
 	["shock attackers for (%d+) seconds on block"]  = {
