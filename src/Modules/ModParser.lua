@@ -4040,6 +4040,9 @@ local specialModList = {
 	["minions convert (%d+)%% of (.+) damage to (.+) damage"] = function(num, _, source, target) return {
 		mod("MinionModifier", "LIST", { mod = mod(source:gsub("^%l", string.upper) .. "DamageConvertTo" .. target:gsub("^%l", string.upper), "BASE", num) })
 	} end,
+	["minions convert (%d+)%% of their maximum life to maximum energy shield per (%d+)%% chaos resistance they have"] = function(num, _, div) return {
+		mod("MinionModifier", "LIST", { mod = mod("LifeConvertToEnergyShield", "BASE", num, { type = "PerStat", stat = "ChaosResist", div = div} ) })
+	} end,
 	["summoned skeletons have avatar of fire"] = { mod("MinionModifier", "LIST", { mod = mod("Keystone", "LIST", "Avatar of Fire") }, { type = "SkillName", skillName = "Summon Skeletons", includeTransfigured = true }) },
 	["summoned skeletons take ([%d%.]+)%% of their maximum life per second as fire damage"] = function(num) return { mod("MinionModifier", "LIST", { mod = mod("FireDegen", "BASE", 1, { type = "PercentStat", stat = "Life", percent = num }) }, { type = "SkillName", skillName = "Summon Skeletons", includeTransfigured = true }) } end,
 	["summoned skeletons have (%d+)%% chance to wither enemies for (%d+) seconds on hit"] = { mod("ExtraSkillMod", "LIST", { mod = flag("Condition:CanWither") }, { type = "SkillName", skillName = "Summon Skeletons", includeTransfigured = true }) },

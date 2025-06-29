@@ -9097,7 +9097,6 @@ c["Limited to 1 Ancestral Tattoo"]={nil,"Limited to 1 Ancestral Tattoo "}
 c["Limited to 1 Attribute Notable Tattoo"]={nil,"Limited to 1 Attribute Notable Tattoo "}
 c["Limited to 1 Keystone Tattoo"]={nil,"Limited to 1 Keystone Tattoo "}
 c["Limited to 1 Loyalty Tattoo"]={nil,"Limited to 1 Loyalty Tattoo "}
-c["Limited to 1 Runegraft"]={nil,"Limited to 1 Runegraft "}
 c["Limited to 1 Runegraft of Bellows"]={nil,"Limited to 1 Runegraft of Bellows "}
 c["Limited to 1 Runegraft of Blasphemy"]={nil,"Limited to 1 Runegraft of Blasphemy "}
 c["Limited to 1 Runegraft of Gemcraft"]={nil,"Limited to 1 Runegraft of Gemcraft "}
@@ -9329,8 +9328,7 @@ c["Minimum Frenzy Charges equal to Maximum while stationary"]={{[1]={[1]={type="
 c["Minimum Power Charges equal to Maximum while stationary"]={{[1]={[1]={type="Condition",var="Stationary"},flags=0,keywordFlags=0,name="MinimumPowerChargesIsMaximumPowerCharges",type="FLAG",value=true}},nil}
 c["Minion Instability"]={{[1]={flags=0,keywordFlags=0,name="Keystone",type="LIST",value="Minion Instability"}},nil}
 c["Minion Life is increased by their Overcapped Fire Resistance"]={{[1]={flags=0,keywordFlags=0,name="MinionModifier",type="LIST",value={mod={[1]={div=1,stat="FireResistOverCap",type="PerStat"},flags=0,keywordFlags=0,name="Life",type="INC",value=1}}}},nil}
-c["Minions Convert 2% of their Maximum Life to Maximum Energy Shield per 1% Chaos Resistance they have"]={nil,"Convert 2% of their Maximum Life to Maximum Energy Shield per 1% Chaos Resistance they have "}
-c["Minions Convert 2% of their Maximum Life to Maximum Energy Shield per 1% Chaos Resistance they have Chaos Damage taken does not bypass Minions' Energy Shield"]={nil,"Convert 2% of their Maximum Life to Maximum Energy Shield per 1% Chaos Resistance they have Chaos Damage taken does not bypass Minions' Energy Shield "}
+c["Minions Convert 2% of their Maximum Life to Maximum Energy Shield per 1% Chaos Resistance they have"]={{[1]={flags=0,keywordFlags=0,name="MinionModifier",type="LIST",value={mod={[1]={div="1",stat="ChaosResist",type="PerStat"},flags=0,keywordFlags=0,name="LifeConvertToEnergyShield",type="BASE",value=2}}}},nil}
 c["Minions Explode when reduced to Low Life, dealing 33% of their Life as Fire Damage to surrounding Enemies"]={{[1]={flags=0,keywordFlags=0,name="ExtraMinionSkill",type="LIST",value={skillId="MinionInstability"}}},nil}
 c["Minions Hits have 50% chance to ignore Enemy Physical Damage Reduction"]={{[1]={flags=0,keywordFlags=0,name="MinionModifier",type="LIST",value={mod={flags=0,keywordFlags=0,name="ChanceToIgnoreEnemyPhysicalDamageReduction",type="BASE",value=50}}}},nil}
 c["Minions Leech 0.4% of Damage as Life"]={{[1]={flags=0,keywordFlags=0,name="MinionModifier",type="LIST",value={mod={flags=0,keywordFlags=0,name="DamageLifeLeech",type="BASE",value=0.4}}}},nil}
@@ -12130,8 +12128,6 @@ c["Zealot's Oath"]={{[1]={flags=0,keywordFlags=0,name="Keystone",type="LIST",val
 c["Zealot's Oath during Effect"]={{[1]={[1]={type="Condition",var="UsingFlask"},flags=0,keywordFlags=0,name="ZealotsOath",type="FLAG",value=true}},nil}
 c["Zealotry has 50% increased Mana Reservation Efficiency"]={{[1]={[1]={includeTransfigured=true,skillName="Zealotry",type="SkillName"},flags=0,keywordFlags=0,name="ManaReservationEfficiency",type="INC",value=50}},nil}
 c["Zealotry has no Reservation"]={{[1]={[1]={skillId="Zealotry",type="SkillId"},[2]={neg=true,skillType=119,type="SkillType"},flags=0,keywordFlags=0,name="SkillData",type="LIST",value={key="manaReservationFlat",value=0}},[2]={[1]={skillId="Zealotry",type="SkillId"},[2]={neg=true,skillType=119,type="SkillType"},flags=0,keywordFlags=0,name="SkillData",type="LIST",value={key="lifeReservationFlat",value=0}},[3]={[1]={skillId="Zealotry",type="SkillId"},[2]={neg=true,skillType=119,type="SkillType"},flags=0,keywordFlags=0,name="SkillData",type="LIST",value={key="manaReservationPercent",value=0}},[4]={[1]={skillId="Zealotry",type="SkillId"},[2]={neg=true,skillType=119,type="SkillType"},flags=0,keywordFlags=0,name="SkillData",type="LIST",value={key="lifeReservationPercent",value=0}}},nil}
-c["[DNT] Projectiles you create move at your speed"]={nil,"[DNT] Projectiles you create move at your speed "}
-c["[DNT] Projectiles you create move at your speed Limited to 1 Runegraft"]={nil,"[DNT] Projectiles you create move at your speed Limited to 1 Runegraft "}
 c["a Critical Strike from a Unique Enemy"]={nil,"a Critical Strike from a Unique Enemy "}
 c["a Critical Strike from a Unique Enemy Limited to 1 Loyalty Tattoo"]={nil,"a Critical Strike from a Unique Enemy Limited to 1 Loyalty Tattoo "}
 c["a Unique Enemy is in your Presence"]={nil,"a Unique Enemy is in your Presence "}
