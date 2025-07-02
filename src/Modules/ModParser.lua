@@ -3674,7 +3674,7 @@ local specialModList = {
 	} end,
 	["temporal chains has (%d+)%% reduced effect on you"] = function(num) return { mod("CurseEffectOnSelf", "INC", -num, { type = "SkillName", skillName = "Temporal Chains" }) } end,
 	["unaffected by temporal chains"] = { mod("CurseEffectOnSelf", "MORE", -100, { type = "SkillName", skillName = "Temporal Chains" }, { type = "GlobalEffect", effectType = "Global", unscalable = true }) },
-	["targets are unaffected by your hexes"] = { mod("CurseEffect", "MORE", -100) },
+	["targets are unaffected by your hexes"] = { mod("CurseEffect", "MORE", -100, { type = "SkillType", skillType = SkillType.Hex }) },
 	["([%+%-][%d%.]+) seconds to cat's stealth duration"] = function(num) return { mod("PrimaryDuration", "BASE", num, { type = "SkillName", skillName = "Aspect of the Cat" }) } end,
 	["([%+%-][%d%.]+) seconds to cat's agility duration"] = function(num) return { mod("SecondaryDuration", "BASE", num, { type = "SkillName", skillName = "Aspect of the Cat" }) } end,
 	["([%+%-][%d%.]+) seconds to avian's might duration"] = function(num) return { mod("PrimaryDuration", "BASE", num, { type = "SkillName", skillName = "Aspect of the Avian" }) } end,
@@ -3915,6 +3915,8 @@ local specialModList = {
 	["curses are inflicted on you instead of linked targets"] = { mod("ExtraLinkEffect", "LIST", { mod = flag("CurseImmune"), }), },
 	["elemental ailments are inflicted on you instead of linked targets"] = { mod("ExtraLinkEffect", "LIST", { mod = flag("ElementalAilmentImmune") }) },
 	["non%-unique utility flasks you use apply to linked targets"] = { mod("ExtraLinkEffect", "LIST", { mod = mod("ParentNonUniqueFlasksAppliedToYou", "FLAG", true, { type = "GlobalEffect", effectType = "Global", unscalable = true } ), }) },
+	["non%-curse auras from your skills only apply to you and linked targets"] = { flag("SelfAurasAffectYouAndLinkedTarget", { type = "SkillType", skillType = SkillType.Aura }, { type = "SkillType", skillType = SkillType.AppliesCurse, neg = true }) },
+	["linked targets always count as in range of non%-curse auras from your skills"] = { },
 	["gain unholy might on block for (%d) seconds"] = { flag("Condition:UnholyMight", { type = "Condition", var = "BlockedRecently"}), flag("Condition:CanWither", { type = "Condition", var = "BlockedRecently"}), },
 	-- Traps, Mines
 	["traps and mines deal (%d+)%-(%d+) additional physical damage"] = function(_, min, max) return { mod("PhysicalMin", "BASE", tonumber(min), nil, 0, bor(KeywordFlag.Trap, KeywordFlag.Mine)), mod("PhysicalMax", "BASE", tonumber(max), nil, 0, bor(KeywordFlag.Trap, KeywordFlag.Mine)) } end,
