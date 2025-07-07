@@ -813,7 +813,7 @@ function ItemClass:ParseRaw(raw, rarity, highQuality)
 					elseif gameModeStage == "FINDEXPLICIT" then
 						gameModeStage = "DONE"
 					end
-				elseif foundExplicit then
+				elseif foundExplicit or (not foundExplicit and gameModeStage == "EXPLICIT") then
 					modLine.modList = { }
 					modLine.extra = line
 					t_insert(modLines, modLine)
@@ -1077,7 +1077,8 @@ function ItemClass:BuildRaw()
 			for varId in pairs(modLine.variantList) do
 				varSpec = (varSpec and varSpec .. "," or "") .. varId
 			end
-			line = "{variant:" .. varSpec .. "}" .. line
+			local var = "{variant:" .. varSpec .. "}"
+			line = var .. line:gsub("\n", "\n" .. var) -- Variants that go over 1 line need to have the gsub to fix there being no "variant:" at the start
 		end
 		if modLine.modTags and #modLine.modTags > 0 then
 			line = "{tags:" .. table.concat(modLine.modTags, ",") .. "}" .. line
@@ -1335,11 +1336,21 @@ function ItemClass:BuildModListForSlotNum(baseList, slotNum)
 			B = "Multiplier:BlueSocketIn"..slotName,
 			W = "Multiplier:WhiteSocketIn"..slotName,
 		}
+		local groupCounts = {}
 		for _, socket in ipairs(self.sockets) do
+			local group = socket.group
+    		groupCounts[group] = (groupCounts[group] or 0) + 1
 			if multiName[socket.color] then
 				modList:NewMod(multiName[socket.color], "BASE", 1, "Item Sockets")
 			end
 		end
+		local unlinkedSockets = 0
+		for _, count in pairs(groupCounts) do
+			if count == 1 then
+				unlinkedSockets = unlinkedSockets + 1
+			end
+		end
+		modList:NewMod("Multiplier:UnlinkedSocketIn"..slotName, "BASE", unlinkedSockets, "Unlinked Item Sockets")
 	end
 	local craftedQuality = calcLocal(modList,"Quality","BASE",0) or 0
 	if craftedQuality ~= self.craftedQuality then
@@ -1516,7 +1527,8 @@ function ItemClass:BuildModListForSlotNum(baseList, slotNum)
 	elseif self.base.tincture then
 		local tinctureData = self.tinctureData
 		tinctureData.manaBurn = (self.base.tincture.manaBurn + 0.01) / (1 + calcLocal(modList, "TinctureManaBurnRate", "INC", 0) / 100) / (1 + calcLocal(modList, "TinctureManaBurnRate", "MORE", 0) / 100)
-		tinctureData.cooldown = self.base.tincture.cooldown / (1 + calcLocal(modList, "TinctureCooldownRecovery", "INC", 0) / 100)
+		tinctureData.cooldownInc = calcLocal(modList, "TinctureCooldownRecovery", "INC", 0) + calcLocal(modList, "CooldownRecovery", "INC", 0)
+		tinctureData.cooldown = self.base.tincture.cooldown / (1 + tinctureData.cooldownInc / 100)
 		tinctureData.effectInc = calcLocal(modList, "TinctureEffect", "INC", 0) + calcLocal(modList, "LocalEffect", "INC", 0)
 		for _, value in ipairs(modList:List(nil, "TinctureData")) do
 			tinctureData[value.key] = value.value
