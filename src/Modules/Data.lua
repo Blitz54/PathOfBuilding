@@ -64,16 +64,29 @@ end
 local function makeSkillDataMod(dataKey, dataValue, ...)
 	return makeSkillMod("SkillData", "LIST", { key = dataKey, value = dataValue }, 0, 0, ...)
 end
-local function processMod(grantedEffect, mod)
+local function processMod(grantedEffect, mod, statName)
 	mod.source = grantedEffect.modSource
 	if type(mod.value) == "table" and mod.value.mod then
 		mod.value.mod.source = "Skill:"..grantedEffect.id
 	end
+
 	for _, tag in ipairs(mod) do
 		if tag.type == "GlobalEffect" then
 			grantedEffect.hasGlobalEffect = true
 			break
 		end
+	end
+
+	local notMinionStat = false
+	if grantedEffect.notMinionStat and statName and (grantedEffect.support or grantedEffect.skillTypes and grantedEffect.skillTypes[SkillType.Buff]) then
+		for _, notMinionStatName in ipairs(grantedEffect.notMinionStat) do
+			if notMinionStatName == statName then
+				notMinionStat = true
+			end
+		end
+	end
+	if notMinionStat then
+		t_insert(mod, { type = "ActorCondition", actor = "parent", neg = true})
 	end
 end
 
@@ -155,12 +168,13 @@ data.misc = { -- magic numbers
 	MaxResistCap = 90,
 	EvadeChanceCap = 95,
 	DodgeChanceCap = 75,
+	BlockChanceCap = 90,
 	SuppressionChanceCap = 100,
 	SuppressionEffect = 50,
 	AvoidChanceCap = 75,
 	EnergyShieldRechargeBase = 0.33,
 	EnergyShieldRechargeDelay = 2,
-	WardRechargeDelay = 4,
+	WardRechargeDelay = 2,
 	Transfiguration = 0.3,
 	EnemyMaxResist = 75,
 	LeechRateBase = 0.02,
@@ -196,6 +210,8 @@ data.misc = { -- magic numbers
 	ehpCalcMaxDamage = 100000000,
 	-- max iterations can be increased for more accuracy this should be perfectly accurate unless it runs out of iterations and so high eHP values will be underestimated.
 	ehpCalcMaxIterationsToCalc = 50,
+	-- more iterations would reduce the cases where max hit would result in overkill damage or leave some life.
+	maxHitSmoothingPasses = 8,
 	-- maximum increase for stat weights, only used in trader for now.
 	maxStatIncrease = 2, -- 100% increased
 	-- PvP scaling used for hogm
@@ -260,8 +276,10 @@ data.keystones = {
 	"Acrobatics",
 	"Ancestral Bond",
 	"Arrow Dancing",
+	"Arsenal of Vengeance",
 	"Avatar of Fire",
 	"Blood Magic",
+	"Bloodsoaked Blade",
 	"Call to Arms",
 	"Chaos Inoculation",
 	"Conduit",
@@ -295,6 +313,7 @@ data.keystones = {
 	"Perfect Agony",
 	"Phase Acrobatics",
 	"Point Blank",
+	"Power of Purpose",
 	"Precise Technique",
 	"Resolute Technique",
 	"Runebinder",
@@ -351,6 +370,9 @@ data.highPrecisionMods = {
 		["BASE"] = 1,
 	},
 	["EnergyShieldRegen"] = {
+		["BASE"] = 1,
+	},
+	["RageRegen"] = {
 		["BASE"] = 1,
 	},
 	["LifeDegenPercent"] = {
@@ -436,7 +458,7 @@ data.highPrecisionMods = {
 	},
 	["SupportManaMultiplier"] = {
 		["MORE"] = 4,
-	}
+	},
 }
 
 data.weaponTypeInfo = {
@@ -516,6 +538,7 @@ data.jewelRadius = data.setJewelRadiiGlobally(latestTreeVersion)
 data.enchantmentSource = {
 	{ name = "ENKINDLING", label = "Enkindling Orb" },
 	{ name = "INSTILLING", label = "Instilling Orb" },
+	{ name = "RUNESMITH", label = "Runecraft Bench" },
 	{ name = "HEIST", label = "Heist" },
 	{ name = "HARVEST", label = "Harvest" },
 	{ name = "DEDICATION", label = "Dedication to the Goddess" },
@@ -549,10 +572,29 @@ data.enchantments = {
 	["Belt"] = LoadModule("Data/EnchantmentBelt"),
 	["Body Armour"] = LoadModule("Data/EnchantmentBody"),
 	["Weapon"] = LoadModule("Data/EnchantmentWeapon"),
-	["Flask"] = LoadModule("Data/EnchantmentFlask"),
+	["UtilityFlask"] = LoadModule("Data/EnchantmentFlask"),
 }
+do
+	data.enchantments["Flask"] = data.enchantments["UtilityFlask"]--["HARVEST"]
+	for baseType, _ in pairs(data.weaponTypeInfo) do
+		data.enchantments[baseType] = { }
+		for enchantmentType, enchantmentList in pairs(data.enchantments["Weapon"]) do
+			if type(enchantmentList[1]) == "string" then
+				data.enchantments[baseType][enchantmentType] = enchantmentList
+			elseif type(enchantmentList[1]) == "table" then
+				data.enchantments[baseType][enchantmentType] = {}
+				for _, enchantment in ipairs(enchantmentList) do
+					if enchantment.types[baseType] then
+						t_insert(data.enchantments[baseType][enchantmentType], table.concat(enchantment, "/"))
+					end
+				end
+			end
+		end
+	end					
+end
 data.essences = LoadModule("Data/Essence")
 data.veiledMods = LoadModule("Data/ModVeiled")
+data.necropolisMods = LoadModule("Data/ModNecropolis")
 data.crucible = LoadModule("Data/Crucible")
 data.pantheons = LoadModule("Data/Pantheons")
 data.costs = LoadModule("Data/Costs")
@@ -593,16 +635,92 @@ data.itemTagSpecial = {
 }
 data.itemTagSpecialExclusionPattern = {
 	["life"] = {
+		["amulet"] = {
+			"lower Life on Hit", -- The Eternal Struggle
+			"your Spectres' Life", -- The Jinxed Juju
+			"when on Full Life",
+			"when on Low Life",
+			"^Allocates",
+		},
 		["body armour"] = {
-			"increased Damage while Leeching Life",
 			"Life as Physical Damage",
 			"Life as Extra Maximum Energy Shield",
 			"maximum Life as Fire Damage",
+			"while on Full Life", -- foxshade
+			"while you are on Full Life", -- foxshade
 			"when on Full Life",
-			"Enemy's life",
-			"Life From You",
-			"^Socketed Gems are Supported by Level"
+			"when on Low Life",
+			"Gain Maximum Life instead of Maximum Energy Shield",
+			"^Socketed Gems are Supported by Level",
+			"^Allocates",
 		},
+		["boots"] = {
+			"Enemy's Life", -- Legacy of Fury
+			"^Enemies Cannot Leech Life", -- Sin Trek
+			"when on Full Life",
+			"when on Low Life",
+			"^Allocates",
+		},
+		["belt"] = {
+			"Life as Extra Maximum Energy Shield", -- Soul Tether
+			"Life Recovery from Flasks", -- The Druggery
+			"Life Flasks gain", -- The Druggery
+			"when on Full Life",
+			"when on Low Life",
+			"^Allocates",
+		},
+		["gloves"] = {
+			"maximum Life as Physical Damage", -- Haemophilia
+			"Traps Cost Life", -- Slavedriver's Hand
+			"when on Full Life",
+			"when on Low Life",
+			"^Allocates",
+		},
+		["helmet"] = {
+			"Recouped as Life", -- Flame Exarch
+			"Life when you Suppress", -- Elevore
+			"Leech when on Low Life", -- Deidbell
+			"while no Life is Reserved", -- Malachai's Awakening
+			"^Socketed Gems are Supported by Level", -- Shako
+			"when on Full Life",
+			"when on Low Life",
+			"^Allocates",
+		},
+		["ring 1"] = {
+			"Energy Shield instead of Life", -- Valyrium
+			"increased Damage while Leeching Life", -- Synthesis Implicit
+			"when on Full Life",
+			"when on Low Life",
+			"^Allocates",
+		},
+		["ring 2"] = {
+			"Energy Shield instead of Life", -- Valyrium
+			"increased Damage while Leeching Life", -- Synthesis Implicit
+			"when on Full Life",
+			"when on Low Life",
+			"^Allocates",
+		},
+		["weapon 1"] = {
+			"^Socketed Gems are Supported by Level", -- Hiltless, etc
+			"maximum Life as Chaos Damage", -- Obliteration
+			"total Maximum Life and Energy Shield as Fire Damage", -- Oni-Goroshi
+			"Life as Physical Damage", -- Crucible/Synthesis
+			"maximum Life as Fire Damage", -- Crucible
+			"when on Full Life",
+			"when on Low Life",
+			"^Allocates",
+
+		},
+		["weapon 2"] = {
+			"maximum Life as Chaos Damage", -- Obliteration
+			"^Socketed Gems Cost and Reserve Life", -- Prism Guardian
+			"increased Damage while Leeching Life", -- Synthesis Implicit ~ Quivers
+			"Life as Physical Damage", -- Crucible/Synthesis
+			"maximum Life as Fire Damage", -- Crucible
+			"when on Full Life",
+			"when on Low Life",
+			"^Allocates",
+		}
 	},
 	["evasion"] = {
 		["ring"] = {
@@ -755,7 +873,7 @@ data.skillStatMapMeta = {
 			map = copyTable(map)
 			t[key] = map
 			for _, mod in ipairs(map) do
-				processMod(t._grantedEffect, mod)
+				processMod(t._grantedEffect, mod, key)
 			end
 			return map
 		end
@@ -784,14 +902,14 @@ for skillId, grantedEffect in pairs(data.skills) do
 	grantedEffect.statMap = grantedEffect.statMap or { }
 	setmetatable(grantedEffect.statMap, data.skillStatMapMeta)
 	grantedEffect.statMap._grantedEffect = grantedEffect
-	for _, map in pairs(grantedEffect.statMap) do
+	for name, map in pairs(grantedEffect.statMap) do
 		-- Some mods need different scalars for different stats, but the same value.  Putting them in a group allows this
 		for _, modOrGroup in ipairs(map) do
 			if modOrGroup.name then
-				processMod(grantedEffect, modOrGroup)
+				processMod(grantedEffect, modOrGroup, name)
 			else
 				for _, mod in ipairs(modOrGroup) do
-					processMod(grantedEffect, mod)
+					processMod(grantedEffect, mod, name)
 				end
 			end
 		end
@@ -803,6 +921,9 @@ data.gems = LoadModule("Data/Gems")
 data.gemForSkill = { }
 data.gemForBaseName = { }
 data.gemsByGameId = { }
+-- Lookup table - [Gem.grantedEffectId] = VaalGemId
+data.gemGrantedEffectIdForVaalGemId = { }
+data.gemVaalGemIdForBaseGemId = { }
 local function setupGem(gem, gemId)
 	gem.id = gemId
 	gem.grantedEffect = data.skills[gem.grantedEffectId]
@@ -831,8 +952,19 @@ for gemId, gem in pairs(data.gems) do
     gem.name = sanitiseText(gem.name)
     setupGem(gem, gemId)
     local loc, _ = gemId:find('Vaal')
+	if loc then
+		data.gemGrantedEffectIdForVaalGemId[gem.secondaryGrantedEffectId] = gemId
+		for otherGemId, otherGem in pairs(data.gems) do
+			if otherGem.grantedEffectId == gem.secondaryGrantedEffectId then
+				data.gemVaalGemIdForBaseGemId[gemId] = otherGemId 
+				break
+			end
+		end
+	end
     for _, alt in ipairs{"AltX", "AltY"} do
         if loc and data.skills[gem.secondaryGrantedEffectId..alt] then
+			data.gemGrantedEffectIdForVaalGemId[gem.secondaryGrantedEffectId..alt] = gemId..alt
+			data.gemVaalGemIdForBaseGemId[gemId..alt] = data.gemVaalGemIdForBaseGemId[gemId]..alt
             local newGem = { name, gameId, variantId, grantedEffectId, secondaryGrantedEffectId, vaalGem, tags = {}, tagString, reqStr, reqDex, reqInt, naturalMaxLevel }
 			-- Hybrid gems (e.g. Vaal gems) use the display name of the active skill e.g. Vaal Summon Skeletons of Sorcery
             newGem.name = "Vaal " .. data.skills[gem.secondaryGrantedEffectId..alt].baseTypeName
@@ -858,9 +990,9 @@ end
 
 -- Load minions
 data.minions = { }
-LoadModule("Data/Minions", data.minions, makeSkillMod)
+LoadModule("Data/Minions", data.minions, makeSkillMod, makeFlagMod)
 data.spectres = { }
-LoadModule("Data/Spectres", data.spectres, makeSkillMod)
+LoadModule("Data/Spectres", data.spectres, makeSkillMod, makeFlagMod)
 for name, spectre in pairs(data.spectres) do
 	spectre.limit = "ActiveSpectreLimit"
 	data.minions[name] = spectre
@@ -875,7 +1007,7 @@ data.printMissingMinionSkills = function()
 	for _, minion in pairs(data.minions) do
 		for _, skillId in ipairs(minion.skillList) do
 			if not data.skills[skillId] and not missing[skillId] then
-				ConPrintf("'%s' missing skill '%s'", minion.name, skillId)
+				--ConPrintf("'%s' missing skill '%s'", minion.name, skillId)
 				missing[skillId] = true
 			end
 		end

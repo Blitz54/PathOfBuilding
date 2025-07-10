@@ -156,14 +156,20 @@ end
 
 -- Copy an Active Skill
 function calcs.copyActiveSkill(env, mode, skill)
-	local activeEffect = {
-		grantedEffect = skill.activeEffect.grantedEffect,
-		level = skill.activeEffect.srcInstance.level,
-		quality = skill.activeEffect.srcInstance.quality,
-		qualityId = skill.activeEffect.srcInstance.qualityId,
-		srcInstance = skill.activeEffect.srcInstance,
-		gemData = skill.activeEffect.srcInstance.gemData,
+    local activeEffect = {
+        grantedEffect = skill.activeEffect.grantedEffect,
+		level = skill.activeEffect.level,
+		quality = skill.activeEffect.quality
 	}
+
+	if skill.activeEffect.srcInstance then
+		activeEffect.level = skill.activeEffect.srcInstance.level
+		activeEffect.quality = skill.activeEffect.srcInstance.quality
+		activeEffect.qualityId = skill.activeEffect.srcInstance.qualityId
+		activeEffect.srcInstance = skill.activeEffect.srcInstance
+		activeEffect.gemData = skill.activeEffect.srcInstance.gemDat
+	end
+
 	local newSkill = calcs.createActiveSkill(activeEffect, skill.supportList, skill.actor, skill.socketGroup, skill.summonSkill)
 	local newEnv, _, _, _ = calcs.initEnv(env.build, mode, env.override)
 	calcs.buildActiveSkillModList(newEnv, newSkill)
@@ -279,7 +285,7 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 			weapon1Flags, weapon1Info = ModFlag[env.data.weaponTypeInfo["None"].flag], env.data.weaponTypeInfo["None"]
 		end
 		if weapon1Flags then
-			if skillFlags.attack then
+			if skillFlags.attack or skillFlags.dotFromAttack then
 				activeSkill.weapon1Flags = weapon1Flags
 				skillFlags.weapon1Attack = true
 				if weapon1Info.melee and skillFlags.melee then
@@ -288,7 +294,7 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 					skillFlags.melee = nil
 				end
 			end
-		elseif skillTypes[SkillType.DualWieldOnly] or skillTypes[SkillType.MainHandOnly] or skillFlags.forceMainHand or weapon1Info then
+		elseif (skillTypes[SkillType.DualWieldOnly] or skillTypes[SkillType.MainHandOnly] or skillFlags.forceMainHand or weapon1Info) and not activeSkill.summonSkill then
 			-- Skill requires a compatible main hand weapon
 			skillFlags.disable = true
 			activeSkill.disableReason = "Main Hand weapon is not usable with this skill"
@@ -296,11 +302,15 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 		if not skillTypes[SkillType.MainHandOnly] and not skillFlags.forceMainHand then
 			local weapon2Flags, weapon2Info = getWeaponFlags(env, activeSkill.actor.weaponData2, weaponTypes)
 			if weapon2Flags then
-				if skillFlags.attack then
+				if skillTypes[SkillType.DualWieldRequiresDifferentTypes] and (activeSkill.actor.weaponData1.type == activeSkill.actor.weaponData2.type) then
+					-- Skill requires a different compatible off hand weapon to main hand weapon
+					skillFlags.disable = true
+					activeSkill.disableReason = activeSkill.disableReason or "Weapon Types Need to be Different"
+				elseif skillFlags.attack or skillFlags.dotFromAttack then
 					activeSkill.weapon2Flags = weapon2Flags
 					skillFlags.weapon2Attack = true
 				end
-			elseif skillTypes[SkillType.DualWieldOnly] or weapon2Info then
+			elseif (skillTypes[SkillType.DualWieldOnly] or weapon2Info) and not activeSkill.summonSkill then
 				-- Skill requires a compatible off hand weapon
 				skillFlags.disable = true
 				activeSkill.disableReason = activeSkill.disableReason or "Off Hand weapon is not usable with this skill"
@@ -415,12 +425,12 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 	else
 		effectiveRange = env.configInput.projectileDistance
 	end
-	
+
 	-- Build config structure for modifier searches
 	activeSkill.skillCfg = {
 		flags = bor(skillModFlags, activeSkill.weapon1Flags or activeSkill.weapon2Flags or 0),
 		keywordFlags = skillKeywordFlags,
-		skillName = activeGrantedEffect.name:gsub("^Vaal ",""):gsub("Summon Skeletons","Summon Skeleton"), -- This allows modifiers that target specific skills to also apply to their Vaal counterpart
+		skillName = activeGrantedEffect.name:gsub("^Vaal ", ""), -- This allows modifiers that target specific skills to also apply to their Vaal counterpart
 		summonSkillName = activeSkill.summonSkill and activeSkill.summonSkill.activeEffect.grantedEffect.name,
 		skillGem = activeEffect.gemData,
 		skillGrantedEffect = activeGrantedEffect,
@@ -445,8 +455,17 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 	local skillModList = new("ModList", activeSkill.actor.modDB)
 	activeSkill.skillModList = skillModList
 	activeSkill.baseSkillModList = skillModList
+	
+	-- The damage fixup stat applies x% less base Attack Damage and x% more base Attack Speed as confirmed by Openarl Jan 4th 2024
+	-- Implemented in this manner as the stat exists on the minion not the skills 
+	if activeSkill.actor and activeSkill.actor.minionData and activeSkill.actor.minionData.damageFixup then
+		skillModList:NewMod("Damage", "MORE", -100 * activeSkill.actor.minionData.damageFixup, "Damage Fixup", ModFlag.Attack)
+		skillModList:NewMod("Speed", "MORE", 100 * activeSkill.actor.minionData.damageFixup, "Damage Fixup", ModFlag.Attack)
+	end
 
-	if skillModList:Flag(activeSkill.skillCfg, "DisableSkill") and not skillModList:Flag(activeSkill.skillCfg, "EnableSkill") then
+	-- Mods which apply curses are not disabled by Gruthkul's Pelt
+	local curseApplicationSkill = activeSkill.socketGroup and activeSkill.socketGroup.sourceItem ~= nil and activeSkill.skillFlags.curse and activeSkill.activeEffect.srcInstance and activeSkill.activeEffect.srcInstance.noSupports and activeSkill.activeEffect.srcInstance.triggered
+	if skillModList:Flag(activeSkill.skillCfg, "DisableSkill") and not (skillModList:Flag(activeSkill.skillCfg, "EnableSkill") or (curseApplicationSkill and skillModList:Flag(nil, "ForceEnableCurseApplication"))) then
 		skillFlags.disable = true
 		activeSkill.disableReason = "Skills of this type are disabled"
 	end
@@ -467,9 +486,6 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 			if level.manaMultiplier then
 				skillModList:NewMod("SupportManaMultiplier", "MORE", level.manaMultiplier, skillEffect.grantedEffect.modSource)
 			end
-			if level.manaReservationPercent then
-				activeSkill.skillData.manaReservationPercent = level.manaReservationPercent
-			end	
 			-- Handle multiple triggers situation and if triggered by a trigger skill save a reference to the trigger.
 			local match = skillEffect.grantedEffect.addSkillTypes and (not skillFlags.disable)
 			if match and skillEffect.grantedEffect.isTrigger then
@@ -479,6 +495,8 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 				else
 					activeSkill.triggeredBy = skillEffect
 				end
+			elseif level.manaReservationPercent then
+				activeSkill.skillData.manaReservationPercent = level.manaReservationPercent
 			end
 			if level.PvPDamageMultiplier then
 				skillModList:NewMod("PvpDamageMultiplier", "MORE", level.PvPDamageMultiplier, skillEffect.grantedEffect.modSource)
@@ -489,11 +507,28 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 		end
 	end
 
+	if activeSkill.activeEffect.srcInstance then
+		local supportEffect = activeSkill.activeEffect.srcInstance.supportEffect
+		if supportEffect and supportEffect.grantedEffect.isTrigger then
+			for effect, _ in pairs(supportEffect.isSupporting) do
+				activeSkill.skillData.manaReservationPercent = (activeSkill.skillData.manaReservationPercent or 0) + (supportEffect.grantedEffect.levels[supportEffect.level].manaReservationPercent or 0)
+			end
+		end
+	end
+
 	-- Apply gem/quality modifiers from support gems
-	for _, value in ipairs(skillModList:List(activeSkill.skillCfg, "SupportedGemProperty")) do
+	skillModList:NewMod("GemLevel", "BASE", activeSkill.activeEffect.srcInstance and activeSkill.activeEffect.srcInstance.level or activeSkill.activeEffect.level, "Max Level")
+	for _, supportProperty in ipairs(skillModList:Tabulate("LIST", activeSkill.skillCfg, "SupportedGemProperty")) do
+		local value = supportProperty.value
 		if value.keyword == "grants_active_skill" and activeSkill.activeEffect.gemData and not activeSkill.activeEffect.gemData.tags.support  then
 			activeEffect[value.key] = activeEffect[value.key] + value.value
+			skillModList:NewMod("GemSupport".. value.key:gsub("^%l", string.upper), "BASE", value.value, supportProperty.mod.source, #supportProperty.mod > 0 and supportProperty.mod[1] or nil)
 		end
+	end
+
+	for _, gemProperty  in ipairs((activeSkill.activeEffect.gemPropertyInfo or {})) do
+		local value =  gemProperty.value
+		skillModList:NewMod("GemItem".. value.key:gsub("^%l", string.upper), "BASE", value.value, gemProperty.mod.source, #gemProperty.mod > 0 and gemProperty.mod[1] or nil)
 	end
 
 	-- Add active gem modifiers
@@ -511,7 +546,7 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 		activeSkill.skillData.attackTime = level.attackTime
 	end
 	if level.attackSpeedMultiplier then
-		skillModList:NewMod("Speed", "MORE", level.attackSpeedMultiplier, activeEffect.grantedEffect.modSource, ModFlag.Attack)
+		activeSkill.skillData.attackSpeedMultiplier = level.attackSpeedMultiplier
 	end
 	if level.cooldown then
 		activeSkill.skillData.cooldown = level.cooldown
@@ -588,6 +623,7 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 
 	-- Create minion
 	local minionList, isSpectre
+	local minionSupportLevel = { }
 	if activeGrantedEffect.minionList then
 		if activeGrantedEffect.minionList[1] then
 			minionList = copyTable(activeGrantedEffect.minionList)
@@ -601,7 +637,10 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 	for _, skillEffect in ipairs(activeSkill.effectList) do
 		if skillEffect.grantedEffect.support and skillEffect.grantedEffect.addMinionList then
 			for _, minionType in ipairs(skillEffect.grantedEffect.addMinionList) do
-				t_insert(minionList, minionType)
+				if not isValueInArray(minionList, minionType) then
+					minionSupportLevel[minionType] = skillEffect.grantedEffect.levels[skillEffect.level].levelRequirement
+					t_insert(minionList, minionType)
+				end
 			end
 		end
 	end
@@ -627,14 +666,17 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 			minion.minionData = env.data.minions[minionType]
 			minion.level = activeSkill.skillData.minionLevelIsEnemyLevel and env.enemyLevel or 
 								activeSkill.skillData.minionLevelIsPlayerLevel and (m_min(env.build and env.build.characterLevel or activeSkill.skillData.minionLevel or activeEffect.grantedEffectLevel.levelRequirement, activeSkill.skillData.minionLevelIsPlayerLevel)) or 
-								activeSkill.skillData.minionLevel or activeEffect.grantedEffectLevel.levelRequirement
+								minionSupportLevel[minion.type] or activeSkill.skillData.minionLevel or activeEffect.grantedEffectLevel.levelRequirement
 			-- fix minion level between 1 and 100
 			minion.level = m_min(m_max(minion.level,1),100) 
 			minion.itemList = { }
 			minion.uses = activeGrantedEffect.minionUses
-			minion.lifeTable = isSpectre and env.data.monsterLifeTable or env.data.monsterAllyLifeTable
-			local attackTime = minion.minionData.attackTime * (1 - (minion.minionData.damageFixup or 0))
-			local damage = env.data.monsterDamageTable[minion.level] * minion.minionData.damage * attackTime
+			minion.lifeTable = (minion.minionData.lifeScaling == "AltLife1" and env.data.monsterLifeTable2) or (minion.minionData.lifeScaling == "AltLife2" and env.data.monsterLifeTable3) or (isSpectre and env.data.monsterLifeTable) or env.data.monsterAllyLifeTable
+			local attackTime = minion.minionData.attackTime
+			local damage = (isSpectre and env.data.monsterDamageTable[minion.level] or env.data.monsterAllyDamageTable[minion.level]) * minion.minionData.damage
+			if not minion.minionData.baseDamageIgnoresAttackSpeed then -- minions with this flag do not factor attack time into their base damage
+				 damage = damage * attackTime
+			end
 			if activeGrantedEffect.minionHasItemSet then
 				if env.mode == "CALCS" and activeSkill == env.player.mainSkill then
 					if not env.build.itemsTab.itemSets[activeEffect.srcInstance.skillMinionItemSetCalcs] then

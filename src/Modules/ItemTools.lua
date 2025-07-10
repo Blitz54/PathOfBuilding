@@ -13,14 +13,24 @@ itemLib = { }
 
 -- Info table for all types of item influence
 itemLib.influenceInfo = {
-	{ key="shaper", display="Shaper", color=colorCodes.SHAPER },
-	{ key="elder", display="Elder", color=colorCodes.ELDER },
-	{ key="adjudicator", display="Warlord", color=colorCodes.ADJUDICATOR },
-	{ key="basilisk", display="Hunter", color=colorCodes.BASILISK },
-	{ key="crusader", display="Crusader", color=colorCodes.CRUSADER },
-	{ key="eyrie", display="Redeemer", color=colorCodes.EYRIE },
-	{ key="cleansing", display="Searing Exarch", color=colorCodes.CLEANSING },
-	{ key="tangle", display="Eater of Worlds", color=colorCodes.TANGLE },
+	["all"] = {
+		{ key="shaper", display="Shaper", color=colorCodes.SHAPER },
+		{ key="elder", display="Elder", color=colorCodes.ELDER },
+		{ key="adjudicator", display="Warlord", color=colorCodes.ADJUDICATOR },
+		{ key="basilisk", display="Hunter", color=colorCodes.BASILISK },
+		{ key="crusader", display="Crusader", color=colorCodes.CRUSADER },
+		{ key="eyrie", display="Redeemer", color=colorCodes.EYRIE },
+		{ key="cleansing", display="Searing Exarch", color=colorCodes.CLEANSING },
+		{ key="tangle", display="Eater of Worlds", color=colorCodes.TANGLE },
+	},
+	["default"] = {
+		{ key="shaper", display="Shaper", color=colorCodes.SHAPER },
+		{ key="elder", display="Elder", color=colorCodes.ELDER },
+		{ key="adjudicator", display="Warlord", color=colorCodes.ADJUDICATOR },
+		{ key="basilisk", display="Hunter", color=colorCodes.BASILISK },
+		{ key="crusader", display="Crusader", color=colorCodes.CRUSADER },
+		{ key="eyrie", display="Redeemer", color=colorCodes.EYRIE },
+	}
 }
 
 -- Apply a value scalar to the first n of any numbers present
@@ -129,16 +139,20 @@ end
 itemLib.wiki = {
 	key = "F1",
 	openGem = function(gemData)
-		local name = gemData.name;
-
-		if gemData.tags.support then
-			name = name .. " Support"
+		local name
+		if gemData.name then -- skill
+			name = gemData.name
+			if gemData.tags.support then
+				name = name .. " Support"
+			end
+		else -- grantedEffect from item/passive
+			name = gemData;
 		end
 
 		itemLib.wiki.open(name)
 	end,
 	openItem = function(item)
-		local name = item.rarity == "UNIQUE" and item.title or item.baseName
+		local name = (item.rarity == "UNIQUE" or item.rarity == "RELIC") and item.title or item.baseName
 
 		itemLib.wiki.open(name)
 	end,
