@@ -14,6 +14,7 @@ local slot_map = {
     ["Amulet"] = { icon = NewImageHandle(), path = "Assets/icon_amulet.png" },
     ["Ring 1"] = { icon = NewImageHandle(), path = "Assets/icon_ring_left.png" },
     ["Ring 2"] = { icon = NewImageHandle(), path = "Assets/icon_ring_right.png" },
+    ["Ring"] = { icon = NewImageHandle(), path = "Assets/icon_ring.png" },
     ["Belt"] = { icon = NewImageHandle(), path = "Assets/icon_belt.png" },
     ["Jewel"] = { icon = NewImageHandle(), path = "Assets/icon_jewel.png" },
     ["Flask 1"] = { icon = NewImageHandle(), path = "Assets/icon_flask.png" },
@@ -27,4 +28,18 @@ icons = {}
 
 function icons.getIconForSlot(slot)
     return slot_map[slot] and slot_map[slot].icon
+end
+
+function icons.getIconForItem(item)
+	local slot = item:GetPrimarySlot()
+
+	if item.type == "Shield" or item.type == "Quiver" or item.type == "Bow" then
+		slot = item.type
+	elseif item.type == "Tincture" then
+		slot = "Flask 1"
+	elseif item.type == "Ring" or slot == "Ring 1" or slot == "Ring 2" then
+		slot = "Ring"
+	end
+
+	return slot_map[slot] and slot_map[slot].icon
 end
