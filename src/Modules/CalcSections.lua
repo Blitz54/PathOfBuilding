@@ -1638,7 +1638,7 @@ return {
 	{ label = "Inc. Charges Gain", { format = "{0:mod:1}%", { modName = "FlaskChargesGained", modType = "INC" }, }, },
 	{ label = "Inc. Charges Used", { format = "{0:mod:1}%", { modName = "FlaskChargesUsed", modType = "INC" }, }, },
 	{ label = "% to not Consume", { format = "{0:mod:1}%", { modName = "FlaskChanceNotConsumeCharges", modType = "BASE" }, }, },
-	{ label = "Charge on crit %", { format = "{0:output:FlaskChargeOnCritChance}%", { modName = "FlaskChargeOnCritChance", modType = "BASE" }}, },
+	{ label = "Charge on crit %", { format = "{0:mod:1}%", { modName = "FlaskChargeOnCritChance", modType = "BASE" }}, },
 	{ label = "Charges/s", { format = "{2:output:FlaskChargeGen}", { modName = { "FlaskChargesGenerated", "FlaskChargesGeneratedPerEmptyFlask" }, modType = "BASE" }}, },
 } }, { defaultCollapsed = true, label = "Utility Flasks", color = colorCodes.MAGIC, data = {
 	extra = "{2:output:UtilityFlaskChargeGen}/s",

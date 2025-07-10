@@ -1377,7 +1377,6 @@ function calcs.perform(env, skipEHP)
 		output.LifeFlaskChargeGen = totalChargesGenerated + lifeChargesGenerated
 		output.ManaFlaskChargeGen = totalChargesGenerated + manaChargesGenerated
 		output.UtilityFlaskChargeGen = totalChargesGenerated + utilityChargesGenerated
-		output.FlaskChargeOnCritChance = m_min(100, modDB:Sum("BASE", nil, "FlaskChargeOnCritChance"))
 	end
 
 	-- Merge flask modifiers
