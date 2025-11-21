@@ -5,329 +5,315 @@
 data.uniques.new = {
 -- New
 [[
-Azadi Crest
-Lacquered Buckler
-Source: Drops from unique{Mercenary} after winning a duel
-League: Mercenaries of Trarthus
-Requires Level 54, 154 Dex
+Bitter Instinct
+Spiny Round Shield
+Source: Drops from unique{Uber Incarnation of Neglect} in normal{Moment of Loneliness}
+Requires Level 68, 85 Str, 85 Dex
 Implicits: 1
-6% increased Movement Speed
-+(1-100) to maximum Life
-+(1-10)% Chance to Block
-(1-10)% chance to avoid Projectiles
-Your Lucky or Unlucky effects use the best or
-worst from three rolls instead of two
+60% increased Block Recovery
+(170-250)% increased Armour and Evasion
+Reflects (200-300) Physical Damage to Melee Attackers
+Retaliation Skills deal (50-100)% increased Damage
+Damaging Retaliation Skills become Usable every 4 seconds
+Retaliation Skills become Usable for (50-100)% longer
 ]],[[
-Betrayal's Sting
-Steel Ring
-Source: Drops from unique{Incarnation of Neglect} in normal{Moment of Loneliness}
-Requires Level 80
-Implicits: 1
-{tags:attack}Adds (3-4) to (10-14) Physical Damage to Attacks
-{tags:jewellery_attribute}+(20-35) to Dexterity
-{tags:jewellery_resistance}(-30--20)% to all Elemental Resistances
-{tags:jewellery_resistance}+(20-30)% to Chaos Resistance
-5% increased Movement Speed
-(25-40)% chance to inflict an additional Poison on the same Target when you inflict Poison
-]],[[
-Binds of Bloody Vengeance
-Vanguard Belt
-Source: Drops from unique{Mercenary} after winning a duel
-League: Mercenaries of Trarthus
-Requires Level 78
-Implicits: 1
-{tags:jewellery_defense}+(260-320) to Armour and Evasion Rating
-{tags:jewellery_defense}+(200-400) to Armour
-{tags:life}+(60-90) to maximum Life
-(20-40)% increased Attack Damage if you've been Hit Recently
-All Hits with your next Non-Channelling Attack within 4 seconds of taking a Critical Strike will be Critical Strikes
-]],[[
-Cadigan's Authority
-Platinum Sceptre
-Source: Obtained from unique{Shipping} in normal{Kingsmarch}
-Requires Level 62, 113 Str, 113 Int
-Implicits: 1
-30% increased Elemental Damage
-Adds (60-85) to (100-133) Physical Damage
-+(3-5) to maximum number of Summoned Totems
-You cannot have more than 2 Summoned Totems of the same type
-(40-70)% increased Totem Placement speed
-Battlemage
-]],[[
-Coiling Whisper
-Amethyst Ring
-Source: Drops from unique{Incarnation of Fear} in normal{Moment of Trauma}
-Requires Level 32
-Implicits: 1
-{tags:jewellery_resistance}+(17-23)% to Chaos Resistance
-{tags:caster}(25-50)% reduced Area of Effect of Hex Skills
-Targets are Unaffected by your Hexes
-When 90% of your Hex's Duration Expires on an Enemy, Eat 1 Soul per Enemy Power
-]],[[
-Enmity's Embrace
-Vermillion Ring
-Source: Drops from unique{Incarnation of Fear} in normal{Moment of Trauma}
-Requires Level 80
-Implicits: 1
-{tags:life}(5-7)% increased Maximum Life
-{tags:jewellery_attribute}+(30-50) to Strength
-{tags:jewellery_elemental}(10-20)% increased Fire Damage
-{tags:jewellery_resistance}(65-75)% reduced Fire Resistance
-{tags:jewellery_elemental}Take (300-500) Fire Damage when you use a Skill
-Damage Penetrates Fire Resistance equal to your Overcapped Fire Resistance, up to a maximum of 200%
-]],[[
-Hand of Heresy
-Martyr Gloves
-Source: Drops from unique{Mercenary} after winning a duel
-League: Mercenaries of Trarthus
-Requires Level 77, 70 Str, 70 Int
-(40-80)% increased Armour and Energy Shield
-(15-25)% increased Life Regeneration rate
-15% increased Area of Effect of Aura Skills
-Excommunicate Enemies on Melee Hit for 3 seconds
-]],[[
-Howlcrack
-Ezomyte Burgonet
-Source: Drops from unique{Mercenary} after winning a duel
-League: Mercenaries of Trarthus
-Requires Level 60, 138 Str
-+(30-40) to Strength
-(100-160)% increased Armour
-Non-instant Warcries ignore their Cooldown when used
-Warcries cost +15% of Life
-Warcry Skills have (15-25)% increased Area of Effect
-]],[[
-Legacy of the Rose
-Judgement Staff
-Variant: Shaper's Despair
-Variant: Shaper's Ire
-Variant: Shaper's Devastation
-Source: Drops from unique{Incarnation of Neglect} in normal{Moment of Loneliness}
-Requires Level 68, 113 Str, 113 Int
-Implicits: 1
-+25% Chance to Block Attack Damage while wielding a Staff
-Grants Level 20 Summon Shaper Memory
-{variant:1}Grants Level 20 Shaper's Despair, which will be used by Shaper Memory
-{variant:2}Grants Level 20 Shaper's Ire, which will be used by Shaper Memory
-{variant:3}Grants Level 20 Shaper's Devastation, which will be used by Shaper Memory
-(200-300)% increased Physical Damage
-(25-40)% increased Cast Speed
-+(3-5) to Level of all Spell Skill Gems
-Gain 1 Remembrance when you spend a total of 200 Energy
-Shield with no Shaper Memory Summoned
-Maximum 10 Remembrance
-Eldritch Battery
-]],[[
-Mystic Refractor
-Pagan Wand
-Requires Level 33, 118 Int
-Implicits: 1
-10% increased Cast Speed
-Skills fire (2-3) additional Projectiles
-(10-20)% increased Projectile Speed
-(30-50)% increased Projectile Damage
-Projectiles cannot continue after colliding with targets
-]],[[
-Prospero's Protection
-Iron Ring
-Requires Level 32
-Implicits: 1
-{tags:attack}Adds 1 to 4 Physical Damage to Attacks
-(4-6)% chance to Block Attack Damage
-{tags:jewellery_attribute}+(15-35) to Strength
-{tags:life}+(45-60) to Maximum Life
-{tags:jewellery_defense}Armour from equipped shield is doubled
-{tags:jewellery_defense}Gain no armour from equipped body armour
-]],[[
-Scornflux
-Satin Slippers
-Source: Drops from unique{Mercenary} after winning a duel
-League: Mercenaries of Trarthus
-Requires Level 54, 69 Int
-+(5-15) to Intelligence
-+(40-70) to Maximum Mana
-+(5-15)% to all Elemental Resistances
-Gain Arcane Surge when you use a Movement Skill
-Increase to Cast Speed from Arcane Surge also applies to Movement Speed
-]],[[
-Servant of Decay
-Torturer Garb
-Source: Drops from unique{Incarnation of Fear} in normal{Moment of Trauma}
-Requires Level 77, 151 Dex, 151 Int
-Trigger Level 20 Summon Void Spawn every 4 seconds
-(150-200)% increased Energy Shield
-+(23-37)% to Chaos Resistance
-(4-6)% of Damage from Hits is taken from Void Spawns' Life before you per Void Spawn
-Gain (4-6)% of Non-Chaos Damage as Extra Chaos Damage per Summoned Void Spawn
-]],[[
-Seven Teachings
-Waxed Garb
-Source: Drops from unique{Incarnation of Dread} in normal{Moment of Reverence}
-Requires Level 77, 48 Dex, 48 Int
-Trigger a Socketed Spell on Unarmed Melee Critical Strike, with a 0.25 second Cooldown
-(1-7)% more Attack Speed with Unarmed Melee Attacks
-(100-777)% increased Evasion and Energy Shield
-(1-7)% increased Movement Speed
-+(0.1-0.7) metres to Melee Strike Range with Unarmed Attacks
-+(1-7)% to Unarmed Melee Attack Critical Strike Chance
-+(10-77)% to Critical Strike Multiplier with Unarmed Melee Attack
-]],[[
-Spinehail
-Vile Arrow Quiver
-Source: Drops from unique{Catarina} in normal{Mastermind's Lair}
-Variant: Minion Damage affects you
-Variant: Minion Attack Speed affects you
-Variant: Minion Cast Speed affects you
-Variant: Cast Speed with Minion Skills
-Variant: Minions are Aggressive
-Variant: Armour and Evasion Rating
-Variant: Evasion Rating and Energy Shield
-Variant: Life and Mana Regen
-Variant: Mana and Life Regen
-Variant: Fire and Cold Damage
-Variant: Fire and Lightning Damage
-Variant: Cold and Lightning Damage
-Requires Level 55
-Implicits: 1
-Gain (10-15)% of Physical Damage as Extra Chaos Damage
-+(10-20) to Dexterity and Intelligence
-(7-14)% increased Attack Speed
-Minions deal (30-50)% increased Damage
-(5-10) to (12-24) Added Physical Damage with Bow Attacks
-Bow Attacks Sacrifice a random Damageable Minion to fire (1-3) additional Arrow
-{variant:1}Increases and Reductions to Minion Damage also affect you
-{variant:2}Increases and Reductions to Minion Attack Speed also affect you
-{variant:3}Increases and Reductions to Minion Cast Speed also affect you
-{variant:4}(20-40)% increased Cast Speed with Minion Skills
-{variant:5}Minions are Aggressive
-{variant:6}+(365-400) to Armour and Evasion Rating
-{variant:7}+(365-400) to Evasion Rating
-{variant:7}+(31-35) to maximum Energy Shield
-{variant:8}+(55-60) to maximum Life
-{variant:8}Regenerate 5.3 Mana per second
-{variant:9}+(55-60) to maximum Mana
-{variant:9}Regenerate 33.3 Life per second
-{variant:10}Adds (14-16) to (20-22) Fire Damage
-{variant:10}Adds (14-16) to (20-22) Cold Damage
-{variant:11}Adds (14-16) to (20-22) Fire Damage
-{variant:11}Adds (14-16) to (20-22) Lightning Damage
-{variant:12}Adds (14-16) to (20-22) Cold Damage
-{variant:12}Adds (14-16) to (20-22) Lightning Damage
-]],[[
-Squirming Terror
-Unset Ring
-Requires Level 32
-Implicits: 1
-Has 1 Socket
-An Enemy Writhing Worm spawns every 2 seconds
-{tags:caster}20% chance to Trigger Socketed Spell on Kill, with a 0.5 second Cooldown
-{tags:life}Lose (10-20) Life per Enemy Killed
-{tags:mana}Gain (5-10) Mana per Enemy Killed
-]],[[
-Starcaller
-Abyssal Axe
-Source: Drops from unique{Incarnation of Fear} in normal{Moment of Trauma}
-Requires Level 55, 128 Str, 60 Dex
-Trigger Level 20 Starfall on Melee Critical Strike
-+(10-20) to all Attributes
-(120-180)% increased Physical Damage
-(20-30)% increased Critical Strike Chance
-(10-20)% increased Area of Effect
-Gain (40-60)% of Weapon Physical Damage as Extra Damage of a Random Element
-]],[[
-The Arkhon's Tools
-Cloth Belt
-Source: Drops from unique{Incarnation of Neglect} in normal{Moment of Loneliness}
-Requires Level 16
-Implicits: 1
-(15-25)% increased Stun and Block Recovery
-{tags:jewellery_attribute}+(20-30) to Dexterity and Intelligence
-{tags:mana}(10-20)% increased Mana Reservation Efficiency of Skills
-(15-25)% increased Trap and Mine Throwing Speed
-Summon Skitterbots also summons a Scorching Skitterbot
-Summoned Skitterbots' Auras affect you as well as Enemies
-(50-75)% increased Effect of Non-Damaging Ailments inflicted by Summoned Skitterbots
-]],[[
-The Dark Monarch
-Lich's Circlet
-Variant: Animated Weapons
-Variant: Summoned Golems
-Variant: Summoned Raging Spirits
-Variant: Raised Spectres
-Variant: Raised Spiders
-Variant: Raised Zombies
-Variant: Summoned Reapers
-Variant: Sentinels of Absolution
-Variant: Sentinels of Dominance
-Variant: Sentinels of Purity
-Variant: Summoned Holy Relics
-Variant: Summoned Phantasms
-Variant: Summoned Skeletons
-Variant: Summoned Spectral Wolves
-Source: Drops from unique{Incarnation of Dread} in normal{Moment of Reverence}
-Requires Level 80, 224 Int
-+(50-100) to maximum Energy Shield
-+1 to Level of all Minion Skill Gems
-+(27-37)% to Chaos Resistance
-50% reduced Light Radius
-{variant:1}Maximum number of Animated Weapons is Doubled
-{variant:1}Cannot have Minions other than Animated Weapons
-{variant:2}Maximum number of Summoned Golems is Doubled
-{variant:2}Cannot have Minions other than Summoned Golems
-{variant:3}Maximum number of Summoned Raging Spirits is Doubled
-{variant:3}Cannot have Minions other than Summoned Raging Spirits
-{variant:4}Maximum number of Raised Spectres is Doubled
-{variant:4}Cannot have Minions other than Raised Spectres
-{variant:5}Maximum number of Raised Spiders is Doubled
-{variant:5}Cannot have Minions other than Raised Spiders
-{variant:6}Maximum number of Raised Zombies is Doubled
-{variant:6}Cannot have Minions other than Raised Zombies
-{variant:7}Maximum number of Summoned Reapers is Doubled
-{variant:7}Cannot have Minions other than Summoned Reapers
-{variant:8}Maximum number of Sentinels of Absolution is Doubled
-{variant:8}Cannot have Minions other than Sentinels of Absolution
-{variant:9}Maximum number of Sentinels of Dominance is Doubled
-{variant:9}Cannot have Minions other than Sentinels of Dominance
-{variant:10}Maximum number of Sentinels of Purity is Doubled
-{variant:10}Cannot have Minions other than Sentinels of Purity
-{variant:11}Maximum number of Summoned Holy Relics is Doubled
-{variant:11}Cannot have Minions other than Summoned Holy Relics
-{variant:12}Maximum number of Summoned Phantasms is Doubled
-{variant:12}Cannot have Minions other than Summoned Phantasms
-{variant:13}Maximum number of Summoned Skeletons is Doubled
-{variant:13}Cannot have Minions other than Summoned Skeletons
-{variant:14}Maximum number of Summoned Spectral Wolves is Doubled
-{variant:14}Cannot have Minions other than Summoned Spectral Wolves
-]],[[
-Venarius' Astrolabe
-Astrolabe Amulet
-Source: Drops from unique{Incarnation of Neglect} in normal{Moment of Loneliness}
-Requires Level 69
-Implicits: 2
-Implicit Modifiers Cannot Be Changed
-Has Elder, Shaper and all Conqueror Influences
-The stars are aligned if you have 6 Influence types among other Equipped Items
-You have Elemental Conflux if the stars are aligned
-+(1-3) to Level of all Elemental Skill Gems if the stars are aligned
-+(1-3) to Level of all Elemental Support Gems if the stars are aligned
-]],[[
-Whispers of Infinity
-Seaglass Amulet
+Bonemeld
+Marble Amulet
 Source: Drops from unique{Incarnation of Dread} in normal{Moment of Reverence}
 Requires Level 74
 Implicits: 1
-(10-15)% faster start of Energy Shield Recharge
-(5-10) to (20-25) Added Attack Chaos Damage per 100 Maximum Mana
-+(200-400) to maximum Energy Shield
-(40-60)% reduced maximum Mana
-Skills Cost Energy Shield instead of Mana or Life
+{tags:life}Regenerate (1.2-1.6)% of Life per second
+{tags:jewellery_attribute}+(10-20) to all Attributes
++(1-2) to Level of all Minion Skill Gems
+{tags:jewellery_resistance}-2% to all Resistances per Minion from your Non-Vaal Skills
+{tags:jewellery_defense}(3-4)% increased Defences per Minion from your Non-Vaal Skills
+{tags:jewellery_resistance}Minions gain added Resistances equal to 50% of your Resistances
 ]],[[
-Wine of the Prophet
-Gold Flask
-Source: Drops from unique{Incarnation of Dread} in normal{Moment of Reverence}
-Requires Level 27
-+60 to Maximum Charges
-(20-100)% increased Charges per Use
-Grants a random Divination buff for 20 seconds when used
+Cowards' Wail
+Ezomyte Tower Shield
+Requires Level 64, 159 Str
+Implicits: 1
++(30-40) to maximum Life
+(120-240)% increased Armour
++(5-10)% Chance to Block
+Totems which would be killed by Enemies become Spectral Totems for 8 seconds instead
+Skills used by Spectral Totems deal (40-50)% less Damage
+Maximum (3-5) Spectral Totems
+Unwavering Stance
+]],[[
+Festering Resentment
+Demon Dagger
+Source: Drops from unique{Uber Incarnation of Neglect} in normal{Moment of Loneliness}
+Requires Level 68, 76 Dex, 149 Int
+Implicits: 1
+40% increased Global Critical Strike Chance
+Trigger a Socketed Spell when you Block, with a 0.25 second Cooldown
++(30-45)% Chance to Block Spell Damage while in Off Hand
+(100-150)% increased Spell Damage
+(100-150)% increased Damage with Poison
+Triggered Spells Poison on Hit
+All Damage with Triggered Spells can Poison
+]],[[
+Hand of the Lords
+Carnal Mitts
+Source: Drops from unique{It That Was Esh} and unique{It That Was Tul} in normal{Hive Colony}
+Requires Level 68, 195 Dex, 195 Int
+You cannot Cast Socketed Hex Curse Skills
+Inflict Socketed Hexes on Enemies that trigger your Traps
+Grants Level 30 Will of the Lords Skill
+400% increased Attribute Requirements
+(120-160)% increased Evasion and Energy Shield
+(6-12)% increased Trap Throwing Speed
+Can have up to (3-5) additional Traps placed at a time
+]],[[
+Haunting Memories
+Turquoise Amulet
+Source: Drops from unique{Uber Incarnation of Neglect} in normal{Moment of Loneliness}
+Requires Level 16
+Implicits: 1
+{tags:jewellery_attribute}+(16-24) to Dexterity and Intelligence
++(6-10)% chance to Suppress Spell Damage
+(50-100)% of Suppressed Spell Damage taken bypasses Energy Shield
+(50-100)% of Suppressed Spell Damage taken Recouped as Energy Shield
+{tags:jewellery_attribute}+(20-30) to Dexterity and Intelligence
+{tags:jewellery_defense}+(40-60) to maximum Energy Shield
+{tags:life}+(40-60) to maximum Life
+]],[[
+Jiquani's Potential
+Imperial Staff
+Source: Drops from unique{It That Was Esh} and unique{It That Was Tul} in normal{Hive Colony}
+Requires Level 66, 113 Str, 113 Dex
+Implicits: 1
++25% Chance to Block Spell Damage while wielding a Staff
+(1-7)% increased Intelligence
+(-17-17)% increased maximum Life
++(-1-1) to Level of all Spell Skill Gems
+31% increased Cost of Skills
+1 to (31-53) Spell Lightning Damage per 10 Intelligence
+Blood Magic
+]],[[
+Lost Unity
+Formless Ring
+Source: Drops from unique{It That Was Esh} and unique{It That Was Tul} in normal{Hive Colony}
+Requires Level 42
+Implicits: 1
+{tags:jewellery_defense}(5-7)% increased Global Defences
+Grants Level 30 Herald of the Hive Skill
+{tags:jewellery_resistance}+(10–20)% to all Elemental Resistances
+{tags:jewellery_resistance}+(23–37)% to Chaos Resistance
+]],[[
+Refuge in Isolation
+Paladin Crown
+Source: Drops from unique{Uber Incarnation of Neglect} in normal{Moment of Loneliness}
+Requires Level 78, 116 Str, 116 Int
+(350-650)% increased Armour
+(-50--40)% to all Elemental Resistances
++(13-29)% to Chaos Resistance
+(15-30)% of Elemental Damage from Hits taken as Physical Damage
+Physical Damage of Enemies Hitting you is Unlucky
+]],[[
+Rigwald's Hunt
+General's Brigandine
+Requires Level 66, 103 Str, 103 Dex
+(160-200)% increased Armour and Evasion
+Minions have (20-30)% increased Movement Speed
+Minions have 1% chance to deal Double Damage per Fortification on you
+(30-40)% increased Fortification Duration
+Minions have (6-12)% increased Attack Speed
+Increases and Reductions to Minion Maximum Life also apply to you at 15% of their value
+]],[[
+The Caged Mammoth
+Antique Gauntlets
+Source: Drops from unique{Uber Incarnation of Fear} in normal{Moment of Trauma}
+Requires Level 64, 58 Str
+Adds (6-10) to (16-22) Physical Damage to Attacks
+(8-16)% increased Attack Speed
+(80-120)% increased Armour
+Lose (1-3) Rage per second
+5% less Damage taken per 5 Rage, up to a maximum of 30%
+Maximum Rage is Halved
+]],[[
+The Golden Charlatan
+Lion Sword
+Source: Drops from unique{Uber Incarnation of Dread} in normal{Moment of Reverence}
+Requires Level 65, 104 Str, 122 Dex
+Implicits: 1
++50 to Strength and Dexterity
++200 Intelligence Requirement
+(200-300)% increased Physical Damage
+(10-16)% increased Attack Speed
+(100-200)% increased Critical Strike Chance
+Critical Strikes with this Weapon do not deal extra Damage
+Gain a random Shrine Buff for 30 seconds when you Kill a Rare or Unique Enemy
++1 to maximum Mana per 2 Intelligence
+]],[[
+The Grey Wind
+Spectral Axe
+Source: Drops from unique{It That Was Esh} and unique{It That Was Tul} in normal{Hive Colony}
+Requires Level 33, 85 Str, 37 Dex
+(30-50)% increased Fire Damage
+Attacks with this Weapon have Added Fire Damage equal to (8-12)% of Player's Maximum Life
+Each Rage also grants +2% to Fire Damage Over Time Multiplier
+Nearby Enemies have Fire Exposure while at maximum Rage
++(-5-5) to Maximum Rage
+]],[[
+The Hallowed Monarch
+Faithful Helmet
+Source: Drops from unique{Uber Incarnation of Dread} in normal{Moment of Reverence}
+Requires Level 73, 101 Str, 101 Int
+(150-230)% increased Armour
++(25-35)% to all Elemental Resistances
+50% increased Light Radius
+Link Skills can target Damageable Minions
+Your Linked Minions take (75-65)% less Damage
+On Killing a Rare monster, a random Linked Minion gains its Modifiers for 60 seconds
+]],[[
+The Monastery Bell
+Dream Mace
+Requires Level 32, 107 Str
+Implicits: 1
+10% reduced Enemy Stun Threshold
+(50-75)% increased Physical Damage
+Adds (5-9) to (13-18) Physical Damage
+(6-10)% increased Attack Speed
+Chance to Block is Unlucky
+Count as Blocking Attack Damage from the first target Hit with each Shield Attack
+]],[[
+The Sundered Will
+Fugitive Ring
+Source: Drops from unique{It That Was Esh} and unique{It That Was Tul} in normal{Hive Colony}
+Requires Level 42
+Implicits: 2
+Cannot roll Modifiers of Non-Chaos Damage Types
+{tags:jewellery_resistance}+2% to maximum Chaos Resistance
+{tags:jewellery_attribute}+(7-13) to all Attributes
+{tags:chaos_damage}Adds (7-11) to (17-23) Chaos Damage
+{tags:jewellery_resistance}+(13-29)% to Chaos Resistance
+(20-30)% increased Area of Effect of Aura Skills
+(20-35)% reduced Reservation Efficiency of Skills
+Increases and Reductions to Chaos Damage also apply to Effect of Auras from Chaos Skills at (10–15)% of their value, up to a maximum of 150%
+]],[[
+The Unseen Hue
+Opal Ring
+Source: Drops from unique{Uber Incarnation of Dread} in normal{Moment of Reverence}
+Requires Level 80
+Variant: Scorch
+Variant: Brittle
+Variant: Sap
+Implicits: 1
+{tags:elemental_damage}(15-25)% increased Elemental Damage
+{tags:jewellery_resistance}+(5-30)% to Fire Resistance
+{tags:jewellery_resistance}+(5-30)% to Cold Resistance
+{tags:jewellery_resistance}+(5-30)% to Lightning Resistance
+{tags:caster,attack,speed}(6-12)% increased Attack and Cast Speed
+(10-20)% increased Effect of Non-Damaging Ailments
+{variant:1}Hits with Prismatic Skills always Scorch
+{variant:2}Hits with Prismatic Skills always inflict Brittle
+{variant:3}Hits with Prismatic Skills always Sap
+]],[[
+The Will of Esh
+Synaptic Ring
+Source: Drops from unique{It That Was Esh} and unique{It That Was Tul} in normal{Hive Colony}
+Requires Level 42
+Implicits: 2
+Cannot roll Modifiers of Non-Lightning Damage Types
+{tags:jewellery_resistance}+2% to maximum Lightning Resistance
+{tags:jewellery_attribute}+(15-25) to Intelligence
+{tags:elemental_damage}Adds (1-2) to (43-56) Lightning Damage
+{tags:jewellery_resistance}+(20-30)% to Lightning Resistance
+(20-30)% increased Area of Effect of Aura Skills
+(20-35)% reduced Reservation Efficiency of Skills
+Increases and Reductions to Lightning Damage also apply to Effect of Auras from Lightning Skills at (10-15)% of their value, up to a maximum of 150%
+]],[[
+The Will of Tul
+Cryonic Ring
+Source: Drops from unique{It That Was Esh} and unique{It That Was Tul} in normal{Hive Colony}
+Requires Level 42
+Implicits: 2
+Cannot roll Modifiers of Non-Cold Damage Types
+{tags:jewellery_resistance}+2% to maximum Cold Resistance
+{tags:jewellery_attribute}+(15-25) to Dexterity
+{tags:elemental_damage}Adds (8-12) to (18-26) Cold Damage
+{tags:jewellery_resistance}+(20-30)% to Cold Resistance
+(20-30)% increased Area of Effect of Aura Skills
+(20-35)% reduced Reservation Efficiency of Skills
+Increases and Reductions to Cold Damage also apply to Effect of Auras from Cold Skills at (10-15)% of their value, up to a maximum of 150%
+]],[[
+The Will of Uul-Netol
+Organic Ring
+Source: Drops from unique{It That Was Esh} and unique{It That Was Tul} in normal{Hive Colony}
+Requires Level 42
+Implicits: 2
+Cannot roll Modifiers of Non-Physical Damage Types
+3% additional Physical Damage Reduction
+{tags:jewellery_attribute}+(15-25) to Strength
+Adds (8-12) to (14-20) Physical Damage
+{tags:jewellery_defense}(20-30)% increased Armour
+(20-30)% increased Area of Effect of Aura Skills
+(20-35)% reduced Reservation Efficiency of Skills
+Increases and Reductions to Physical Damage also apply to Effect of Auras from Physical Skills at (10-15)% of their value, up to a maximum of 150%
+]],[[
+The Will of Xoph
+Enthalpic Ring
+Source: Drops from unique{It That Was Esh} and unique{It That Was Tul} in normal{Hive Colony}
+Requires Level 42
+Implicits: 2
+Cannot roll Modifiers of Non-Fire Damage Types
+{tags:jewellery_resistance}+2% to maximum Fire Resistance
+{tags:jewellery_attribute}+(15-25) to Strength
+{tags:elemental_damage}Adds (10-14) to (26-34) Fire Damage
+{tags:jewellery_resistance}+(20-30)% to Fire Resistance
+(20-30)% increased Area of Effect of Aura Skills
+(20-35)% reduced Reservation Efficiency of Skills
+Increases and Reductions to Fire Damage also apply to Effect of Auras from Fire Skills at (10-15)% of their value, up to a maximum of 150%
+]],[[
+Unlight Extant
+Sage Wand
+Requires Level 30, 119 Int
+Implicits: 1
+(17-21)% increased Spell Damage
+(31-43)% increased Chaos Damage
+(7-13)% increased Cast Speed
++1 to Level of all Chaos Spell Skill Gems
+Chaos Skills inflict up to 15 Withered Debuffs on Hit for (5-7) seconds
+Cannot Inflict Wither on targets that are not on Full Life
+]],[[
+Wellwater Phylactery
+Colossal Mana Flask
+Source: Drops from unique{Uber Incarnation of Dread} in normal{Moment of Reverence}
+Requires Level 64
+(200-300)% increased Charges per use
+(150-200)% increased Amount Recovered
+(-60--40)% less Duration
+Removes (10-15)% of Life when Used
+Starts Energy Shield Recharge when Used
+Energy Shield Recharge is not delayed by Damage during Effect
+]],[[
+Wing of the Wyvern
+Imperial Bow
+Source: Drops from unique{Uber Incarnation of Fear} in normal{Moment of Trauma}
+Requires Level 66, 212 Dex
+Implicits: 1
+(20-24)% increased Elemental Damage with Attack Skills
+Trigger a Socketed Spell when a Hit from this
+Weapon Freezes a Target, with a 0.25 second Cooldown
+Adds (164-204) to (250-300) Cold Damage
+Adds (163-199) to (241-293) Chaos Damage
+(20-30)% increased Attack Speed
+Your Chaos Damage can Freeze
+Battlemage
+]],[[
+Woespike
+Steel Ring
+Source: Drops from unique{Incarnation of Fear} in normal{Moment of Trauma}
+Requires Level 80
+Implicits: 1
+{tags:attack,physical_damage}Adds (3-4) to (10-14) Physical Damage to Attacks
+{tags:jewellery_attribute}+(25-40) to Strength and Dexterity
+{tags:attack,physical_damage}Adds (8-12) to (18-24) Physical Damage to Attacks
+{tags:attack}(10-20)% chance to Impale Enemies on Hit with Attacks
+(40-25)% reduced Impale Duration
+{tags:attack}(40-60)% chance on Melee Hit for the Strongest Impale on target to last for 1 additional Hit
 ]]
+
 }

@@ -421,9 +421,9 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 
 	-- Calculate Distance for meleeDistance or projectileDistance (for melee proximity, e.g. Impact)
 	if skillFlags.melee then
-		effectiveRange = env.configInput.meleeDistance
+		effectiveRange = env.configInput.meleeDistance or env.configPlaceholder.meleeDistance
 	else
-		effectiveRange = env.configInput.projectileDistance
+		effectiveRange = env.configInput.projectileDistance or env.configPlaceholder.projectileDistance
 	end
 
 	-- Build config structure for modifier searches
@@ -438,8 +438,11 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 		skillTypes = activeSkill.skillTypes,
 		skillCond = { },
 		skillDist = env.mode_effective and effectiveRange,
-		slotName = activeSkill.slotName,
+		slotName = activeSkill.slotName or (activeSkill.activeEffect.gemCfg and activeSkill.activeEffect.gemCfg.slotName),
+		socketColor = activeSkill.activeEffect.gemCfg and activeSkill.activeEffect.gemCfg.socketColor,
+		socketNum = activeSkill.activeEffect.gemCfg and activeSkill.activeEffect.gemCfg.socketNum
 	}
+
 	if skillFlags.weapon1Attack then
 		activeSkill.weapon1Cfg = copyTable(activeSkill.skillCfg, true)
 		activeSkill.weapon1Cfg.skillCond = setmetatable({ ["MainHandAttack"] = true }, { __index = activeSkill.skillCfg.skillCond })
@@ -486,6 +489,9 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 			if level.manaMultiplier then
 				skillModList:NewMod("SupportManaMultiplier", "MORE", level.manaMultiplier, skillEffect.grantedEffect.modSource)
 			end
+			if level.manaReservationPercent then
+				activeSkill.skillData.manaReservationPercent = level.manaReservationPercent
+			end	
 			-- Handle multiple triggers situation and if triggered by a trigger skill save a reference to the trigger.
 			local match = skillEffect.grantedEffect.addSkillTypes and (not skillFlags.disable)
 			if match and skillEffect.grantedEffect.isTrigger then
@@ -495,8 +501,6 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 				else
 					activeSkill.triggeredBy = skillEffect
 				end
-			elseif level.manaReservationPercent then
-				activeSkill.skillData.manaReservationPercent = level.manaReservationPercent
 			end
 			if level.PvPDamageMultiplier then
 				skillModList:NewMod("PvpDamageMultiplier", "MORE", level.PvPDamageMultiplier, skillEffect.grantedEffect.modSource)
@@ -504,20 +508,15 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 			if level.storedUses then
 				activeSkill.skillData.storedUses = level.storedUses
 			end
-		end
-	end
-
-	if activeSkill.activeEffect.srcInstance then
-		local supportEffect = activeSkill.activeEffect.srcInstance.supportEffect
-		if supportEffect and supportEffect.grantedEffect.isTrigger then
-			for effect, _ in pairs(supportEffect.isSupporting) do
-				activeSkill.skillData.manaReservationPercent = (activeSkill.skillData.manaReservationPercent or 0) + (supportEffect.grantedEffect.levels[supportEffect.level].manaReservationPercent or 0)
+			if level.vaalStoredUses then
+				activeSkill.skillData.storedUses = activeSkill.skillData.storedUses or 0 + level.vaalStoredUses
 			end
 		end
 	end
 
 	-- Apply gem/quality modifiers from support gems
 	skillModList:NewMod("GemLevel", "BASE", activeSkill.activeEffect.srcInstance and activeSkill.activeEffect.srcInstance.level or activeSkill.activeEffect.level, "Max Level")
+	skillModList:NewMod("GemQuality", "BASE", activeSkill.activeEffect.srcInstance and activeSkill.activeEffect.srcInstance.quality or activeSkill.activeEffect.quality, "Max Quality")
 	for _, supportProperty in ipairs(skillModList:Tabulate("LIST", activeSkill.skillCfg, "SupportedGemProperty")) do
 		local value = supportProperty.value
 		if value.keyword == "grants_active_skill" and activeSkill.activeEffect.gemData and not activeSkill.activeEffect.gemData.tags.support  then
@@ -553,6 +552,9 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 	end
 	if level.storedUses then
 		activeSkill.skillData.storedUses = level.storedUses
+	end
+	if level.vaalStoredUses then
+		activeSkill.skillData.storedUses = activeSkill.skillData.storedUses or 0 + level.vaalStoredUses
 	end
 	if level.soulPreventionDuration then
 		activeSkill.skillData.soulPreventionDuration = level.soulPreventionDuration
@@ -660,10 +662,16 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 			local minion = { }
 			activeSkill.minion = minion
 			skillFlags.haveMinion = true
-			minion.parent = env.player
-			minion.enemy = env.enemy
 			minion.type = minionType
 			minion.minionData = env.data.minions[minionType]
+			minion.hostile = minion.minionData and minion.minionData.hostile or false
+			if minion.hostile then
+				minion.parent = env.enemy
+				minion.enemy = env.player
+			else
+				minion.parent = env.player
+				minion.enemy = env.enemy
+			end
 			minion.level = activeSkill.skillData.minionLevelIsEnemyLevel and env.enemyLevel or 
 								activeSkill.skillData.minionLevelIsPlayerLevel and (m_min(env.build and env.build.characterLevel or activeSkill.skillData.minionLevel or activeEffect.grantedEffectLevel.levelRequirement, activeSkill.skillData.minionLevelIsPlayerLevel)) or 
 								minionSupportLevel[minion.type] or activeSkill.skillData.minionLevel or activeEffect.grantedEffectLevel.levelRequirement
@@ -671,9 +679,14 @@ function calcs.buildActiveSkillModList(env, activeSkill)
 			minion.level = m_min(m_max(minion.level,1),100) 
 			minion.itemList = { }
 			minion.uses = activeGrantedEffect.minionUses
-			minion.lifeTable = (minion.minionData.lifeScaling == "AltLife1" and env.data.monsterLifeTable2) or (minion.minionData.lifeScaling == "AltLife2" and env.data.monsterLifeTable3) or (isSpectre and env.data.monsterLifeTable) or env.data.monsterAllyLifeTable
+			if minion.minionData.hostile then
+				minion.lifeTable = env.data.monsterLifeTable
+			else
+				minion.lifeTable = (minion.minionData.lifeScaling == "AltLife1" and env.data.monsterLifeTable2) or (minion.minionData.lifeScaling == "AltLife2" and env.data.monsterLifeTable3) or (isSpectre and env.data.monsterLifeTable) or env.data.monsterAllyLifeTable
+			end
 			local attackTime = minion.minionData.attackTime
-			local damage = (isSpectre and env.data.monsterDamageTable[minion.level] or env.data.monsterAllyDamageTable[minion.level]) * minion.minionData.damage
+			local damageTable = (isSpectre or minion.minionData.hostile) and env.data.monsterDamageTable or env.data.monsterAllyDamageTable
+			local damage = damageTable[minion.level] * minion.minionData.damage
 			if not minion.minionData.baseDamageIgnoresAttackSpeed then -- minions with this flag do not factor attack time into their base damage
 				 damage = damage * attackTime
 			end

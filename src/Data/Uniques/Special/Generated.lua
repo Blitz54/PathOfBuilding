@@ -364,7 +364,7 @@ Variant: Prismatic Ring]]
 
 for _, type in ipairs({ { prefix = "Endurance - ", mods = enduranceChargeMods }, { prefix = "Frenzy - ", mods = frenzyChargeMods }, { prefix = "Power - ", mods = powerChargeMods } }) do
 	for tier, mods in ipairs(type.mods) do
-		for desc, mod in pairs(mods) do
+		for desc in pairsSortByKey(mods) do
 			table.insert(precursorsEmblem, "Variant: " .. type.prefix .. desc)
 		end
 	end
@@ -395,7 +395,7 @@ Implicits: 7
 local index = 8
 for _, type in ipairs({ enduranceChargeMods, frenzyChargeMods, powerChargeMods }) do
 	for tier, mods in ipairs(type) do
-		for desc, mod in pairs(mods) do
+		for desc, mod in pairsSortByKey(mods) do
 			if mod:match("[%+%-]?[%d%.]*%d+%%") then
 				mod = mod:gsub("([%d%.]*%d+)", function(num) return "(" .. num .. "-" .. tonumber(num) * tier .. ")" end)
 			elseif mod:match("%(%-?[%d%.]+%-%-?[%d%.]+%)%%") then
@@ -446,15 +446,15 @@ local balanceOfTerror = {
 -- adding a blank variant for 3 mod jewels
 table.insert(balanceOfTerror, "Variant: None")
 
-for name, _ in pairs(balanceOfTerrorMods) do
+for name in pairsSortByKey(balanceOfTerrorMods) do
 	table.insert(balanceOfTerror, "Variant: "..name)
 end
 
 table.insert(balanceOfTerror, "+(10-15)% to all Elemental Resistances")
 
 local index = 2
-for _, line in pairs(balanceOfTerrorMods) do
-	table.insert(balanceOfTerror, "{variant:"..index.."}"..line)
+for name, line in pairsSortByKey(balanceOfTerrorMods) do
+	table.insert(balanceOfTerror, "{variant:"..index.."}"..balanceOfTerrorMods[name])
 	index = index + 1
 end
 
@@ -643,10 +643,15 @@ local unsortedMods = LoadModule("Data/Uniques/Special/BoundByDestiny")
 local sortedMods = { }
 local boundByDestinyMods = { }
 
-for i, mod in pairs(unsortedMods) do
-	table.insert(sortedMods, { mod.type, i} )
+for id, mod in pairs(unsortedMods) do
+	table.insert(sortedMods, { mod.type, id } )
 end
-table.sort(sortedMods, function (m1, m2) return m1[1] < m2[1] end )
+table.sort(sortedMods, function (m1, m2)
+	if m1[1] == m2[1] then
+		return m1[2] < m2[2]
+	end
+	return m1[1] < m2[1]
+end )
 for _, modId in ipairs(sortedMods) do
 	table.insert(boundByDestinyMods, {
 		Id = modId[2],
@@ -729,13 +734,20 @@ function buildForbidden(classNotables)
 		table.insert(forbidden[name], "Rarity: UNIQUE")
 		table.insert(forbidden[name], "Forbidden " .. name)
 		table.insert(forbidden[name], (name == "Flame" and "Crimson" or "Cobalt") .. " Jewel")
+		local classList = { }
+		for className in pairs(classNotables) do
+			if className ~= "alternate_ascendancies" then
+				table.insert(classList, className)
+			end
+		end
+		table.sort(classList)
 		local index = 1
-		for className, notableTable in pairs(classNotables) do
-			if className ~= "alternate_ascendancies" then --Remove Affliction Ascendancy's
-				for _, notableName in ipairs(notableTable) do
-					table.insert(forbidden[name], "Variant: (" .. className .. ") " .. notableName)
-					index = index + 1
-				end
+		for _, className in ipairs(classList) do
+			local notableTable = classNotables[className]
+			table.sort(notableTable)
+			for _, notableName in ipairs(notableTable) do
+				table.insert(forbidden[name], "Variant: (" .. className .. ") " .. notableName)
+				index = index + 1
 			end
 		end
 		if name == "Flame" then
@@ -746,13 +758,13 @@ function buildForbidden(classNotables)
 		table.insert(forbidden[name], "Limited to: 1")
 		table.insert(forbidden[name], "Item Level: 83")
 		index = 1
-		for className, notableTable in pairs(classNotables) do
-			if className ~= "alternate_ascendancies" then --Remove Affliction Ascendancy's
-				for _, notableName in ipairs(notableTable) do
-					table.insert(forbidden[name], "{variant:" .. index .. "}" .. "Requires Class " .. className)
-					table.insert(forbidden[name], "{variant:" .. index .. "}" .. "Allocates ".. notableName .. " if you have the matching modifier on Forbidden " .. (name == "Flame" and "Flesh" or "Flame"))
-					index = index + 1
-				end
+		for _, className in ipairs(classList) do
+			local notableTable = classNotables[className]
+			table.sort(notableTable)
+			for _, notableName in ipairs(notableTable) do
+				table.insert(forbidden[name], "{variant:" .. index .. "}" .. "Requires Class " .. className)
+				table.insert(forbidden[name], "{variant:" .. index .. "}" .. "Allocates ".. notableName .. " if you have the matching modifier on Forbidden " .. (name == "Flame" and "Flesh" or "Flame"))
+				index = index + 1
 			end
 		end
 		table.insert(forbidden[name], "Corrupted")
@@ -824,7 +836,7 @@ function buildKeystoneItems(keystoneMap)
 	table.insert(impossibleEscape, "Variant: Everything (QoL Test Variant)")
 	local variantCount = #impossibleEscapeKeystones + 1
 	for index, name in ipairs(impossibleEscapeKeystones) do
-		table.insert(impossibleEscape, "{variant:"..index..","..variantCount.."}Passives in radius of "..name.." can be allocated without being connected to your tree")
+		table.insert(impossibleEscape, "{variant:"..index..","..variantCount.."}Passive Skills in radius of "..name.." can be allocated without being connected to your tree")
 	end
 	table.insert(impossibleEscape, "Corrupted")
 	table.insert(data.uniques.generated, table.concat(impossibleEscape, "\n"))
@@ -881,3 +893,70 @@ for _, modId in ipairs(sortedCharmsMods) do
 end
 
 table.insert(data.uniques.generated, table.concat(thatWhichWasTaken, "\n"))
+
+
+local replicaDragonfangsFlightMods = {}
+
+LoadModule("Modules/CalcTools")
+for _, gem in pairs(data.gems) do
+	if not string.match(gem.grantedEffectId, "Alt[XY]$") and calcLib.gemIsType(gem, "active skill", false) and calcLib.gemIsType(gem, "non-vaal", false) then
+		replicaDragonfangsFlightMods[gem.name] = "+3 to Level of all "..gem.name.." Gems"
+	end
+end
+
+local replicaDragonfangsFlight = {
+    [[Replica Dragonfang's Flight
+    Onyx Amulet
+    Selected Variant: 2
+    Has Alt Variant: true
+    Selected Alt Variant: 3
+    LevelReq: 56
+	]]
+}
+
+table.insert(replicaDragonfangsFlight,
+[[Variant: Pre 3.23.0
+Variant: Current
+]]
+)
+
+local sortedReplicaDragonfangsFlightMods = { }
+
+for name, line in pairs(replicaDragonfangsFlightMods) do
+	table.insert(sortedReplicaDragonfangsFlightMods, { line, name } )
+end
+table.sort(sortedReplicaDragonfangsFlightMods, function (m1, m2)
+	if m1[1] == m2[1] then
+		return m1[2] < m2[2]
+	end
+	return m1[1] < m2[1]
+end )
+
+for _, mod in ipairs(sortedReplicaDragonfangsFlightMods) do
+	table.insert(replicaDragonfangsFlight, "Variant: "..mod[2])
+end
+
+table.insert(replicaDragonfangsFlight,
+[[Implicits: 1
+{tags:jewellery_attribute}+(10-16) to all Attributes
+{tags:jewellery_resistance}{variant:1}+(10-15)% to all Elemental Resistances
+{tags:jewellery_resistance}{variant:2}+(5-10)% to all Elemental Resistances
+]]
+)
+
+local index = 3
+for _, mod in ipairs(sortedReplicaDragonfangsFlightMods) do
+	table.insert(replicaDragonfangsFlight, "{variant:"..index.."}"..mod[1])
+	index = index + 1
+end
+
+table.insert(replicaDragonfangsFlight,
+[[
+{variant:1}(10-15)% increased Reservation Efficiency of Skills
+{variant:2}(5-10)% increased Reservation Efficiency of Skills
+{variant:1}Items and Gems have (10-15)% reduced Attribute Requirements
+{variant:2}Items and Gems have (5-10)% reduced Attribute Requirements
+]]
+)
+
+table.insert(data.uniques.generated, table.concat(replicaDragonfangsFlight, "\n"))

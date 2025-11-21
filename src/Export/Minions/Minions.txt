@@ -84,8 +84,6 @@ local minions, mod = ...
 #emit
 
 #monster Metadata/Monsters/AnimatedItem/AnimatedArmour AnimatedArmour
-#mod mod("Speed", "MORE", 10, ModFlag.Attack, 0, { type = "Condition", var = "DualWielding" })
-#mod mod("BlockChance", "BASE", 15, 0, 0, { type = "Condition", var = "DualWielding" })
 #emit
 
 #monster Metadata/Monsters/IcyRagingSpirit/IcyRagingSpirit IcyRagingSpirit
@@ -97,7 +95,6 @@ local minions, mod = ...
 #mod mod("Damage", "MORE", 70), -- MonsterUnique5
 #mod mod("Speed", "MORE", 33, ModFlag.Attack), -- MonsterUnique8
 #mod mod("Damage", "MORE", -33, ModFlag.Attack), -- MonsterUnique8
-#mod mod("DamageTaken", "MORE", -95), -- monster_inherent_damage_taken_+%_final : UniqueAnimatedWeapon.ot
 #emit
 
 #monster Metadata/Monsters/SummonedPhantasm/SummonedPhantasm SummonedPhantasm
@@ -207,5 +204,43 @@ minions["GuardianRelicAll"] = {
 #emit
 
 #monster Metadata/Monsters/ElderTentacle/ElderTentacleMinionLargePlayer VoidSpawn
+#limit ActiveVoidSpawnLimit
+#emit
+
+#monster Metadata/Monsters/LeagueAncestral/AncestralAhuanaMinion AncestralAhuanaMinion
+#emit
+
+#monster Metadata/Monsters/LeagueAncestral/AncestralAkoyaMinion AncestralAkoyaMinion
+#emit
+
+#monster Metadata/Monsters/LeagueAncestral/AncestralIkiahoMinion AncestralIkiahoMinion
+#emit
+
+#monster Metadata/Monsters/LeagueAncestral/AncestralKahuturoaMinion_ AncestralKahuturoaMinion
+#emit
+
+#monster Metadata/Monsters/LeagueAncestral/AncestralKaomMinion_ AncestralKaomMinion
+#emit
+
+#monster Metadata/Monsters/LeagueAncestral/AncestralKiloavaMinion__ AncestralKiloavaMinion
+#emit
+
+#monster Metadata/Monsters/LeagueAncestral/AncestralMaataMinion AncestralMaataMinion
+#emit
+
+#monster Metadata/Monsters/LeagueAncestral/AncestralRakiataMinion AncestralRakiataMinion
+#emit
+
+#monster Metadata/Monsters/LeagueAncestral/AncestralTawhanukuMinion AncestralTawhanukuMinion
+#emit
+
+#monster Metadata/Monsters/LeagueAncestral/AncestralUtulaMinion_ AncestralUtulaMinion
+#emit
+
+#monster Metadata/Monsters/LivingLightning/LivingLightningSummoned LivingLightningMinion
+#limit ActiveLivingLightningLimit
+#emit
+
+#monster Metadata/Monsters/SummonedPhantasm/SummonedPhantasmPenanceMark PenanceMarkPhantasm
 #limit ActiveVoidSpawnLimit
 #emit
