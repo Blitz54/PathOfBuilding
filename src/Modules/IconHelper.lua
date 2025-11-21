@@ -14,10 +14,13 @@ local slot_map = {
     ["Amulet"] = { icon = NewImageHandle(), path = "Assets/icon_amulet.png" },
     ["Ring 1"] = { icon = NewImageHandle(), path = "Assets/icon_ring_left.png" },
     ["Ring 2"] = { icon = NewImageHandle(), path = "Assets/icon_ring_right.png" },
+    ["Ring 3"] = { icon = NewImageHandle(), path = "Assets/icon_ring_right.png" },
     ["Ring"] = { icon = NewImageHandle(), path = "Assets/icon_ring.png" },
     ["Belt"] = { icon = NewImageHandle(), path = "Assets/icon_belt.png" },
     ["Jewel"] = { icon = NewImageHandle(), path = "Assets/icon_jewel.png" },
     ["Flask 1"] = { icon = NewImageHandle(), path = "Assets/icon_flask.png" },
+    ["Graft 1"] = { icon = NewImageHandle(), path = "Assets/icon_graft_left.png" },
+    ["Graft 2"] = { icon = NewImageHandle(), path = "Assets/icon_graft_right.png" },
 }
 
 for k, x in pairs(slot_map) do
