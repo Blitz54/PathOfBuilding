@@ -31,12 +31,15 @@ end
 
 -- Path can be in any format recognized by the extractor at oozPath, ie,
 -- a .ggpk file or a Steam Path of Exile directory
-local GGPKClass = newClass("GGPKData", function(self, path, datPath, reExport)
+---@class GGPKData
+local GGPKClass = newClass("GGPKData")
+
+function GGPKClass:GGPKData(path, datPath, reExport)
 	if datPath then
 		self.oozPath = datPath:match("\\$") and datPath or (datPath .. "\\")
 	else
 		self.path = path
-		self.oozPath = io.popen("cd"):read('*l'):gsub('\r?', '') .. "\\ggpk\\"
+		self.oozPath = GetWorkDir() .. "\\ggpk\\"
 		self:CleanDir(reExport)
 		self:ExtractFiles(reExport)
 	end
@@ -44,13 +47,10 @@ local GGPKClass = newClass("GGPKData", function(self, path, datPath, reExport)
 	self.dat = { }
 	self.txt = { }
 	self.ot = { }
-
-	if USE_DAT64 then
-		self:AddDat64Files()
-	else
-		self:AddDatFiles()
-	end
-end)
+	
+	self:AddDat64Files()
+	return self
+end
 
 function GGPKClass:CleanDir(reExport)
 	if reExport then
@@ -67,49 +67,44 @@ function GGPKClass:ExtractFilesWithBun(fileListStr, useRegex)
 	os.execute(cmd)
 end
 
+-- Use manifest files to avoid command line limit and reduce cmd calls
+function GGPKClass:ExtractFilesWithBunFromTable(fileTable, useRegex)
+	local useRegex = useRegex or false
+	local manifest = self.oozPath .. "extract_list.txt"
+	local f = assert(io.open(manifest, "w"))
+	for _, fname in ipairs(fileTable) do
+		f:write(string.lower(fname), "\n")
+	end
+	f:close()
+	local cmd = 'cd "' .. self.oozPath .. '" && bun_extract_file.exe extract-files ' .. (useRegex and '--regex "' or '"') .. self.path .. '" . < "' .. manifest .. '"'
+	ConPrintf(cmd)
+	os.execute(cmd)
+	os.remove(manifest)
+end
+
 function GGPKClass:ExtractFiles(reExport)
 	if reExport then
 		local datList, txtList, otList, itList = self:GetNeededFiles()
-		local sweetSpotCharacter = 6000
-		local fileList = ''
+		local datFiles = {}
 		for _, fname in ipairs(datList) do
-			if USE_DAT64 then
-				fileList = fileList .. '"' .. fname .. 'c64" '
-			else
-				fileList = fileList .. '"' .. fname .. '" '
-			end
-
-			if fileList:len() > sweetSpotCharacter then
-				self:ExtractFilesWithBun(fileList)
-				fileList = ''
-			end
-		end
-		
-		for _, fname in ipairs(otList) do
-			self:ExtractFilesWithBun('"' .. fname .. '"', true)
+			datFiles[#datFiles + 1] = fname .. "c64"
 		end
 
-		for _, fname in ipairs(txtList) do
-			fileList = fileList .. '"' .. fname .. '" '
-
-			if fileList:len() > sweetSpotCharacter then
-				self:ExtractFilesWithBun(fileList)
-				fileList = ''
-			end
+		-- non-regex chunk: dat files + txtList + itList
+		for i = 1, #txtList do
+			datFiles[#datFiles + 1] = txtList[i]
 		end
-
-		for _, fname in ipairs(itList) do
-			fileList = fileList .. '"' .. fname .. '" '
-
-			if fileList:len() > sweetSpotCharacter then
-				self:ExtractFilesWithBun(fileList)
-				fileList = ''
-			end
+		for i = 1, #itList do
+			datFiles[#datFiles + 1] = itList[i]
 		end
+		self:ExtractFilesWithBunFromTable(datFiles, false)
 
-		if (fileList:len() > 0) then
-			self:ExtractFilesWithBun(fileList)
+		-- regex chunk: otList
+		local regexFiles = {}
+		for i = 1, #otList do
+			regexFiles[#regexFiles + 1] = otList[i]
 		end
+		self:ExtractFilesWithBunFromTable(regexFiles, true)
 	end
 
 	-- Overwrite Enums
@@ -121,51 +116,36 @@ end
 
 function GGPKClass:ExtractList(listToExtract, cache, useRegex)
 	useRegex = useRegex or false
-	local sweetSpotCharacter = 6000
 	printf("Extracting ...")
-	local fileList = ''
+	local fileTable = {}
 	for _, fname in ipairs(listToExtract) do
 		-- we are going to validate if the file is already extracted in this session
 		if not cache[fname] then
 			cache[fname] = true
-			fileList = fileList .. '"' .. string.lower(fname) .. '" '
-
-			if fileList:len() > sweetSpotCharacter then
-				self:ExtractFilesWithBun(fileList, useRegex)
-				fileList = ''
-			end
+			fileTable[#fileTable + 1] = fname
 		end
 	end
-
-	if fileList:len() > 0 then
-		self:ExtractFilesWithBun(fileList, useRegex)
-		fileList = ''
-	end
-end
-
-function GGPKClass:AddDatFiles()
-	local datFiles = scanDir(self.oozPath .. "Data\\", '%w+%.dat$')
-	for _, f in ipairs(datFiles) do
-		local record = { }
-		record.name = f
-		local rawFile = io.open(self.oozPath .. "Data\\" .. f, 'rb')
-		record.data = rawFile:read("*all")
-		rawFile:close()
-		--ConPrintf("FILENAME: %s", fname)
-		t_insert(self.dat, record)
-	end
+	self:ExtractFilesWithBunFromTable(fileTable, useRegex)
 end
 
 function GGPKClass:AddDat64Files()
-	local datFiles = scanDir(self.oozPath .. "Data\\", '%w+%.datc64$')
-	for _, f in ipairs(datFiles) do
+	local datFiles = self:GetNeededFiles()
+	local missingCount = 0
+	table.sort(datFiles, function(a, b) return a:lower() < b:lower() end)
+	for _, fname in ipairs(datFiles) do
 		local record = { }
-		record.name = f
-		local rawFile = io.open(self.oozPath .. "Data\\" .. f, 'rb')
-		record.data = rawFile:read("*all")
-		rawFile:close()
-		--ConPrintf("FILENAME: %s", fname)
-		t_insert(self.dat, record)
+		record.name = fname:match("([^/\\]+)$") .. "c64"
+		local rawFile = io.open(self.oozPath .. fname:gsub("/", "\\") .. "c64", 'rb')
+		if rawFile then
+			record.data = rawFile:read("*all")
+			rawFile:close()
+			t_insert(self.dat, record)
+		else
+			missingCount = missingCount + 1
+		end
+	end
+	if missingCount > 0 then
+		t_insert(main.scriptOutput, { "^7"..string.format("Skipped %d missing cached GGPK data files. Press Ctrl+F5 to refresh GGPK data.", missingCount), height = 14 })
 	end
 end
 
@@ -202,6 +182,7 @@ function GGPKClass:GetNeededFiles()
 		"Data/FlavourText.dat",
 		"Data/Words.dat",
 		"Data/ItemClasses.dat",
+		"Data/ItemStances.dat",
 		"Data/SkillTotemVariations.dat",
 		"Data/Essences.dat",
 		"Data/EssenceType.dat",
@@ -237,11 +218,15 @@ function GGPKClass:GetNeededFiles()
 		"Data/PantheonPanelLayout.dat",
 		"Data/AlternatePassiveAdditions.dat",
 		"Data/AlternatePassiveSkills.dat",
+		"Data/AlternateTreeArt.dat",
 		"Data/AlternateTreeVersions.dat",
 		"Data/GrantedEffectQualityStats.dat",
 		"Data/AegisVariations.dat",
 		"Data/CostTypes.dat",
 		"Data/PassiveJewelRadii.dat",
+		"Data/PassiveJewelRadiiArt.dat",
+		"Data/PassiveSkillTreeConnectionArt.dat",
+		"Data/PassiveSkillTreeNodeFrameArt.dat",
 		"Data/SoundEffects.dat",
 		"Data/MavenJewelRadiusKeystones.dat",
 		"Data/GrantedEffectStatSets.dat",
@@ -273,6 +258,7 @@ function GGPKClass:GetNeededFiles()
 		"Data/ItemisedCorpse.dat",
 		"Data/IndexableSkillGems.dat",
 		"Data/IndexableSupportGems.dat",
+		"Data/IndexableNonActiveSupportGems.dat",
 		"Data/ItemClassCategories.dat",
 		"Data/MinionType.dat",
 		"Data/SummonedSpecificMonsters.dat",
@@ -297,6 +283,8 @@ function GGPKClass:GetNeededFiles()
 		"Data/MercenarySupports.dat",
 		"Data/MercenaryWieldableTypes.dat",
 		"Data/SkillArtVariations.dat",
+		"Data/Melee.dat",
+		"Data/Animation.dat",
 		"Data/MiscAnimated.dat",
 		"Data/MiscAnimatedArtVariations.dat",
 		"Data/MiscBeamsArtVariations.dat",
@@ -305,10 +293,10 @@ function GGPKClass:GetNeededFiles()
 		"Data/ProjectilesArtVariations.dat",
 		"Data/MonsterVarietiesArtVariations.dat",
 		"Data/PreloadGroups.dat",
-		"Data/BrequelGraftTypes.dat",
 		"Data/BrequelGraftSkillStats.dat",
 		"Data/BrequelGraftGrantedSkillLevels.dat",
 		"Data/VillageBalancePerLevelShared.dat",
+		"Data/CurrencyExchange.dat",
 	}
 	local txtFiles = {
 		"Metadata/StatDescriptions/passive_skill_aura_stat_descriptions.txt",

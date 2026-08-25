@@ -10,15 +10,16 @@ local s_format = string.format
 local m_min = math.min
 local m_ceil = math.ceil
 
-local calcs = { }
-calcs.breakdownModule = "Modules/CalcBreakdown"
-LoadModule("Modules/CalcSetup", calcs)
-LoadModule("Modules/CalcPerform", calcs)
-LoadModule("Modules/CalcActiveSkill", calcs)
-LoadModule("Modules/CalcDefence", calcs)
-LoadModule("Modules/CalcOffence", calcs)
-LoadModule("Modules/CalcTriggers", calcs)
-LoadModule("Modules/CalcMirages.lua", calcs)
+---@class Calcs
+local calcs = require("Modules.CalcBase")
+calcs.breakdownModule = "Modules.CalcBreakdown"
+require("Modules.CalcSetup")
+require("Modules.CalcPerform")
+require("Modules.CalcActiveSkill")
+require("Modules.CalcDefence")
+require("Modules.CalcOffence")
+require("Modules.CalcTriggers")
+require("Modules.CalcMirages")
 
 -- Get the average value of a table -- note this is unused
 function math.average(t)
@@ -238,7 +239,8 @@ function calcs.calcFullDPS(build, mode, override, specEnv)
 					end
 					-- This is a fix to prevent skills such as Absolution or Dominating Blow from being counted multiple times when increasing minions count
 					if (activeSkill.activeEffect.grantedEffect.name:match("Absolution") and fullEnv.modDB:Flag(false, "Condition:AbsolutionSkillDamageCountedOnce"))
-						or (activeSkill.activeEffect.grantedEffect.name:match("Dominating Blow") and fullEnv.modDB:Flag(false, "Condition:DominatingBlowSkillDamageCountedOnce")) then
+						or (activeSkill.activeEffect.grantedEffect.name:match("Dominating Blow") and fullEnv.modDB:Flag(false, "Condition:DominatingBlowSkillDamageCountedOnce"))
+						or (activeSkill.activeEffect.grantedEffect.name:match("Holy Strike") and fullEnv.modDB:Flag(false, "Condition:HolyStrikeSkillDamageCountedOnce"))then
 						activeSkillCount = 1
 						activeSkill.infoMessage2 = "Skill Damage"
 					end
@@ -389,11 +391,12 @@ end
 -- Process active skill
 function calcs.buildActiveSkill(env, mode, skill, targetUUID, limitedProcessingFlags)
 	local fullEnv, _, _, _ = calcs.initEnv(env.build, mode, env.override)
+	fullEnv.buildBreakdown = false
 
 	-- env.limitedSkills contains a map of uuids that should be limited in calculation
 	-- this is in order to prevent infinite recursion loops
 	fullEnv.limitedSkills = fullEnv.limitedSkills or {}
-	for _, uuid in ipairs(env.limitedSkills or {}) do
+	for uuid, _ in pairs(env.limitedSkills or {}) do
 		fullEnv.limitedSkills[uuid] = true
 	end
 	for _, uuid in ipairs(limitedProcessingFlags or {}) do
@@ -652,6 +655,9 @@ function calcs.buildOutput(build, mode)
 		if output.BrutalCharges > 0 then
 			t_insert(combatList, s_format("%d Brutal Charges", output.BrutalCharges))
 		end
+		if output.BrineCharges > 0 then
+			t_insert(combatList, s_format("%d Brine Charges", output.BrineCharges))
+		end
 		if output.SiphoningCharges > 0 then
 			t_insert(combatList, s_format("%d Siphoning Charges", output.SiphoningCharges))
 		end
@@ -675,6 +681,9 @@ function calcs.buildOutput(build, mode)
 		end
 		if build.calcsTab.mainEnv.multipliersUsed["SpiritCharge"] then
 			t_insert(combatList, s_format("%d Spirit Charges", output.SpiritCharges))
+		end
+		if build.calcsTab.mainEnv.multipliersUsed["SpiritInfusion"] then
+			t_insert(combatList, s_format("%d Spirit Infusions", output.SpiritInfusions))
 		end
 		if env.player.mainSkill.baseSkillModList:Flag(nil, "Cruelty") then
 			t_insert(combatList, "Cruelty")
@@ -721,6 +730,15 @@ function calcs.buildOutput(build, mode)
 		if env.modDB:Flag(nil, "GloomShrine") then
 			t_insert(combatList, "Gloom Shrine")
 		end
+		if env.modDB:Flag(nil, "GreaterFreezingShrine") then
+			t_insert(combatList, "Greater Freezing Shrine")
+		end
+		if env.modDB:Flag(nil, "GreaterShockingShrine") then
+			t_insert(combatList, "Greater Shocking Shrine")
+		end
+		if env.modDB:Flag(nil, "GreaterSkeletalShrine") then
+			t_insert(combatList, "Greater Skeletal Shrine")
+		end
 		if env.modDB:Flag(nil, "ImpenetrableShrine") then
 			t_insert(combatList, "Impenetrable Shrine")
 		end
@@ -753,6 +771,21 @@ function calcs.buildOutput(build, mode)
 		end
 		if env.modDB:Flag(nil, "LesserResistanceShrine") then
 			t_insert(combatList, "Lesser Resistance Shrine")
+		end
+		if env.modDB:Flag(nil, "BloodShrineOfRats") then
+			t_insert(combatList, "Blood Shrine of Rats")
+		end
+		if env.modDB:Flag(nil, "BloodShrineOfLocusts") then
+			t_insert(combatList, "Blood Shrine of Locusts")
+		end
+		if env.modDB:Flag(nil, "BloodShrineOfToads") then
+			t_insert(combatList, "Blood Shrine of Toads")
+		end
+		if env.modDB:Flag(nil, "BloodShrineOfCrows") then
+			t_insert(combatList, "Blood Shrine of Crows")
+		end
+		if env.modDB:Flag(nil, "BloodShrineOfBats") then
+			t_insert(combatList, "Blood Shrine of Bats")
 		end
 		for name in pairs(env.buffs) do
 			t_insert(buffList, name)

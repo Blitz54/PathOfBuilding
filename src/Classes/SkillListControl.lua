@@ -6,20 +6,43 @@
 local ipairs = ipairs
 local t_insert = table.insert
 local t_remove = table.remove
+local slot_map = {
+	["Weapon 1"] 		= { icon = NewImageHandle(), path = "Assets/icon_weapon.png" },
+	["Weapon 2"] 		= { icon = NewImageHandle(), path = "Assets/icon_weapon_2.png" },
+	["Weapon 1 Swap"] 	= { icon = NewImageHandle(), path = "Assets/icon_weapon_swap.png" },
+	["Weapon 2 Swap"] 	= { icon = NewImageHandle(), path = "Assets/icon_weapon_2_swap.png" },
+	["Bow"] 			= { icon = NewImageHandle(), path = "Assets/icon_bow.png" },
+	["Quiver"] 			= { icon = NewImageHandle(), path = "Assets/icon_quiver.png" },
+	["Shield"] 			= { icon = NewImageHandle(), path = "Assets/icon_shield.png" },
+	["Shield Swap"] 	= { icon = NewImageHandle(), path = "Assets/icon_shield_swap.png" },
+	["Helmet"] 			= { icon = NewImageHandle(), path = "Assets/icon_helmet.png" },
+	["Body Armour"] 	= { icon = NewImageHandle(), path = "Assets/icon_body_armour.png" },
+	["Gloves"] 			= { icon = NewImageHandle(), path = "Assets/icon_gloves.png" },
+	["Boots"] 			= { icon = NewImageHandle(), path = "Assets/icon_boots.png" },
+	["Amulet"] 			= { icon = NewImageHandle(), path = "Assets/icon_amulet.png" },
+	["Ring 1"] 			= { icon = NewImageHandle(), path = "Assets/icon_ring_left.png" },
+	["Ring 2"] 			= { icon = NewImageHandle(), path = "Assets/icon_ring_right.png" },
+	["Ring 3"] 			= { icon = NewImageHandle(), path = "Assets/icon_ring_right.png" },
+	["Belt"] 			= { icon = NewImageHandle(), path = "Assets/icon_belt.png" },
+}
 
-local SkillListClass = newClass("SkillListControl", "ListControl", function(self, anchor, rect, skillsTab)
-	self.ListControl(anchor, rect, 16, "VERTICAL", true, skillsTab.socketGroupList)
+---@class SkillListControl: ListControl
+local SkillListClass = newClass("SkillListControl", "ListControl")
+
+function SkillListClass:SkillListControl(anchor, rect, skillsTab)
+	self:ListControl(anchor, rect, 16, "VERTICAL", true, skillsTab.socketGroupList)
 	self.skillsTab = skillsTab
 	self.label = "^7Socket Groups:"
-	self.controls.delete = new("ButtonControl", {"BOTTOMRIGHT",self,"TOPRIGHT"}, {0, -2, 60, 18}, "Delete", function()
+	self.controls.delete = new("ButtonControl"):ButtonControl({"BOTTOMRIGHT",self,"TOPRIGHT"}, {0, -2, 60, 18}, "Delete", function()
 		self:OnSelDelete(self.selIndex, self.selValue)
 	end)
 	self.controls.delete.enabled = function()
 		return self.selValue ~= nil and self.selValue.source == nil
 	end
-	self.controls.deleteAll = new("ButtonControl", {"RIGHT",self.controls.delete,"LEFT"}, {-4, 0, 70, 18}, "Delete All", function()
+	self.controls.deleteAll = new("ButtonControl"):ButtonControl({"RIGHT",self.controls.delete,"LEFT"}, {-4, 0, 70, 18}, "Delete All", function()
 		main:OpenConfirmPopup("Delete All", "Are you sure you want to delete all socket groups in this build?", "Delete", function()
 			wipeTable(self.list)
+			skillsTab:RebuildImbuedSupportBySlot()
 			skillsTab:SetDisplayGroup()
 			skillsTab:AddUndoState()
 			skillsTab.build.buildFlag = true
@@ -28,13 +51,13 @@ local SkillListClass = newClass("SkillListControl", "ListControl", function(self
 		end)
 	end)
 	self.controls.deleteAll.enabled = function()
-		return #self.list > 0 
+		return #self.list > 0
 	end
-	self.controls.new = new("ButtonControl", {"RIGHT",self.controls.deleteAll,"LEFT"}, {-4, 0, 60, 18}, "New", function()
-		local newGroup = { 
-			label = "", 
-			enabled = true, 
-			gemList = { } 
+	self.controls.new = new("ButtonControl"):ButtonControl({"RIGHT",self.controls.deleteAll,"LEFT"}, {-4, 0, 60, 18}, "New", function()
+		local newGroup = {
+			label = "",
+			enabled = true,
+			gemList = { }
 		}
 		t_insert(self.list, newGroup)
 		self.selIndex = #self.list
@@ -44,7 +67,11 @@ local SkillListClass = newClass("SkillListControl", "ListControl", function(self
 		skillsTab.build.buildFlag = true
 		return skillsTab.gemSlots[1].nameSpec
 	end)
-end)
+	for k, x in pairs(slot_map) do
+		x.icon:Load(x.path)
+	end
+	return self
+end
 
 function SkillListClass:GetRowValue(column, index, socketGroup)
 	if column == 1 then
@@ -55,13 +82,34 @@ function SkillListClass:GetRowValue(column, index, socketGroup)
 			local colour = currentMainSkill and "" or "^x7F7F7F"
 			label = colour .. label .. " (Disabled)"
 		end
-		if currentMainSkill then 
+		if currentMainSkill then
 			local activeLabel = disabled and " (Forced Active)" or " (Active)"
 			label = label .. colorCodes.RELIC .. activeLabel
 		end
-		if socketGroup.includeInFullDPS then 
+		if socketGroup.includeInFullDPS then
 			label = label .. colorCodes.CUSTOM .. " (FullDPS)"
 		end
+
+		if not socketGroup.source then
+			local colorStr = ""
+			for _, gem in ipairs(socketGroup.gemList) do
+				if (gem.gemData or gem.grantedEffect) and gem.enabled then
+					local grantedEffect = gem.grantedEffect or (gem.gemData and gem.gemData.grantedEffect)
+					if grantedEffect then
+						local char = grantedEffect.color == 1 and "R" or grantedEffect.color == 2 and "G" or grantedEffect.color == 3 and "B" or "W"
+						local colorCode = gem.color or ""
+						if colorStr:len() > 0 then
+							colorStr = colorStr .. "^7-"
+						end
+						colorStr = colorStr .. colorCode .. char
+					end
+				end
+			end
+			if colorStr:len() > 0 then
+				label = label .. " ^7" .. colorStr
+			end
+		end
+
 		return label
 	end
 end
@@ -102,7 +150,7 @@ function SkillListClass:OnSelect(index, socketGroup)
 end
 
 function SkillListClass:OnSelCopy(index, socketGroup)
-	if not socketGroup.source then	
+	if not socketGroup.source then
 		self.skillsTab:CopySocketGroup(socketGroup)
 	end
 end
@@ -122,6 +170,7 @@ function SkillListClass:OnSelDelete(index, socketGroup)
 		main:OpenMessagePopup("Delete Socket Group", "This socket group cannot be deleted as it is created by an equipped item.")
 	elseif not socketGroup.gemList[1] then
 		t_remove(self.list, index)
+		self.skillsTab:RebuildImbuedSupportBySlot()
 		if self.skillsTab.displayGroup == socketGroup then
 			self.skillsTab.displayGroup = nil
 		end
@@ -132,6 +181,7 @@ function SkillListClass:OnSelDelete(index, socketGroup)
 	else
 		main:OpenConfirmPopup("Delete Socket Group", "Are you sure you want to delete '"..socketGroup.displayLabel.."'?", "Delete", function()
 			t_remove(self.list, index)
+			self.skillsTab:RebuildImbuedSupportBySlot()
 			if self.skillsTab.displayGroup == socketGroup then
 				self.skillsTab:SetDisplayGroup()
 			end

@@ -82,7 +82,8 @@ function calcLib.doesTypeExpressionMatch(checkTypes, skillTypes, minionTypes)
 end
 
 -- Check if given support skill can support the given active skill
-function calcLib.canGrantedEffectSupportActiveSkill(grantedEffect, activeSkill)
+---@param appliesToGrantedSkills boolean? Generally modifiers which add support gems to the socketed skills don't work with granted skills, and this flag can be used to mark exceptions such as the Pearl of Tsoatha.
+function calcLib.canGrantedEffectSupportActiveSkill(grantedEffect, activeSkill, imbuedSupport, appliesToGrantedSkills)
 	if grantedEffect.unsupported or activeSkill.activeEffect.grantedEffect.cannotBeSupported then
 		return false
 	end
@@ -91,12 +92,19 @@ function calcLib.canGrantedEffectSupportActiveSkill(grantedEffect, activeSkill)
 	end
 
 	-- Special case for things like Forbidden Shako or Hungry Loop with  for example Prismatic Burst and another compatible support
-	if grantedEffect.fromItem and grantedEffect.support and (activeSkill.activeEffect.grantedEffect.fromItem or activeSkill.activeEffect.grantedEffect.modSource:sub(1, #"Item") == "Item" or (activeSkill.activeEffect.srcInstance and activeSkill.activeEffect.srcInstance.fromItem)) then
+	if not appliesToGrantedSkills and grantedEffect.fromItem and grantedEffect.support and (activeSkill.activeEffect.grantedEffect.fromItem or activeSkill.activeEffect.grantedEffect.modSource:sub(1, #"Item") == "Item" or (activeSkill.activeEffect.srcInstance and activeSkill.activeEffect.srcInstance.fromItem)) then
 		return false
 	end
 
-	local effectiveSkillTypes = activeSkill.summonSkill and activeSkill.summonSkill.skillTypes or activeSkill.skillTypes
-	local effectiveMinionTypes = not grantedEffect.ignoreMinionTypes and (activeSkill.summonSkill and activeSkill.summonSkill.minionSkillTypes or activeSkill.minionSkillTypes)
+	local effectiveSkillTypes
+	local effectiveMinionTypes
+	if imbuedSupport then -- Use the skillTypes from the gem so it ignores any support added types
+		effectiveSkillTypes = activeSkill.summonSkill and activeSkill.summonSkill.activeEffect.grantedEffect.skillTypes or activeSkill.activeEffect.grantedEffect.skillTypes
+		effectiveMinionTypes = not grantedEffect.ignoreMinionTypes and (activeSkill.summonSkill and activeSkill.summonSkill.activeEffect.grantedEffect.minionSkillTypes or activeSkill.activeEffect.grantedEffect.minionSkillTypes)
+	else
+		effectiveSkillTypes = activeSkill.summonSkill and activeSkill.summonSkill.skillTypes or activeSkill.skillTypes
+		effectiveMinionTypes = not grantedEffect.ignoreMinionTypes and (activeSkill.summonSkill and activeSkill.summonSkill.minionSkillTypes or activeSkill.minionSkillTypes)
+	end
 
 	-- if the activeSkill is a Minion's skill like "Default Attack", use minion's skillTypes instead for exclusions
 	-- otherwise compare support to activeSkill directly
@@ -176,11 +184,7 @@ end
 function calcLib.buildSkillInstanceStats(skillInstance, grantedEffect)
 	local stats = { }
 	if skillInstance.quality > 0 and grantedEffect.qualityStats then
-		local qualityId = skillInstance.qualityId or "Default"
-		local qualityStats = grantedEffect.qualityStats[qualityId]
-		if not qualityStats then
-			qualityStats = grantedEffect.qualityStats
-		end
+		local qualityStats = grantedEffect.qualityStats
 		for _, stat in ipairs(qualityStats) do
 			stats[stat[1]] = (stats[stat[1]] or 0) + math.modf(stat[2] * skillInstance.quality)
 		end
@@ -241,7 +245,7 @@ end
 --- Correct the tags on conversion with multipliers so they carry over correctly
 --- @param mod table
 --- @param multiplier number
---- @param minionMods bool @convert ActorConditions pointing at parent to normal Conditions
+--- @param minionMods boolean @convert ActorConditions pointing at parent to normal Conditions
 --- @return table @converted multipliers
 function calcLib.getConvertedModTags(mod, multiplier, minionMods)
 	local modifiers = { }
@@ -281,7 +285,7 @@ end
 
 --- Use getGameIdFromGemName to get gameId from the gemName and passed in type. Return true if they're the same and not nil
 --- @param gemName string
---- @param type string
+--- @param typeName string
 --- @param dropVaal boolean 
 --- @return boolean
 function calcLib.isGemIdSame(gemName, typeName, dropVaal)

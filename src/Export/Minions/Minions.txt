@@ -3,8 +3,10 @@
 -- Minion Data
 -- Monster data (c) Grinding Gear Games
 --
-local minions, mod = ...
 
+return function(mod, flag)
+	---@class MinionData
+	local minions = {}
 #monster Metadata/Monsters/RaisedZombies/RaisedZombieStandard RaisedZombie
 #limit ActiveZombieLimit
 #emit
@@ -39,6 +41,10 @@ local minions, mod = ...
 
 #monster Metadata/Monsters/SummonedWolf/SummonedWolf SummonedSpectralWolf
 #limit ActiveWolfLimit
+#emit
+
+#monster Metadata/Monsters/SummonedTiger/SummonedTiger SummonedSpectralTiger
+#limit ActiveTigerLimit
 #emit
 
 #monster Metadata/Monsters/RaisedSkeletons/RaisedSkeletonStandard RaisedSkeleton
@@ -119,7 +125,7 @@ local minions, mod = ...
 
 #monster Metadata/Monsters/Axis/AxisEliteSoldierDominatingBlowVaal AxisEliteSoldierDominatingBlowVaal
 #limit ActiveSentinelOfDominanceLimit
-#mod mod("Damage", "MORE", 200)
+#mod mod("Damage", "MORE", 300)
 #mod mod("DamageTaken", "MORE", -70)
 #emit
 
@@ -129,7 +135,7 @@ local minions, mod = ...
 
 #monster Metadata/Monsters/TemplarJudge/AbsolutionTemplarJudgeVaal AbsolutionTemplarJudgeVaal
 #limit ActiveSentinelOfAbsolutionLimit
-#mod mod("Damage", "MORE", 200)
+#mod mod("Damage", "MORE", 300)
 #mod mod("DamageTaken", "MORE", -70)
 #emit
 
@@ -156,6 +162,12 @@ local minions, mod = ...
 #emit
 
 #monster Metadata/Monsters/Skitterbot/SkitterbotFire SkitterbotFire
+#emit
+
+#monster Metadata/Monsters/Skitterbot/AbyssCurseBot AbyssCurseBot
+#emit
+
+#monster Metadata/Monsters/Skitterbot/AbyssDebuffBot AbyssDebuffBot
 #emit
 
 #monster Metadata/Monsters/SummonedReaper/SummonedReaper SummonedReaper
@@ -242,5 +254,19 @@ minions["GuardianRelicAll"] = {
 #emit
 
 #monster Metadata/Monsters/SummonedPhantasm/SummonedPhantasmPenanceMark PenanceMarkPhantasm
-#limit ActiveVoidSpawnLimit
+#hostile true
 #emit
+
+#monster Metadata/Monsters/AnimatedItem/HolyStrikeAnimatedWeapon HolyStrikeMinion
+#limit ActiveHolyStrikeMinionLimit
+#emit
+
+#monster Metadata/Monsters/Breach/BreachFodderHandSpiderGraftSummoned Hiveborn
+#limit ActiveHivebornLimit
+#emit
+
+#monster Metadata/Monsters/RaisedZombies/RestlessDeadPlayerSummoned ShamblingUndead
+#limit ShamblingUndeadLimit
+#emit
+	return minions
+end
